@@ -1,0 +1,46 @@
+import { Type, Category } from '../Type'; // Substitua './type' pelo caminho correto do seu módulo de tipo
+import { ComposedType } from './ComposedType';
+
+export class ArrayType extends ComposedType {
+    private innerType: Type;
+
+    private constructor(classification: Category, innerType: Type[]) {
+        super(Category.Array);
+        this.innerType = innerType[0];
+    }
+
+    public getInnerType(): Type {
+        return this.innerType;
+    }
+
+    public match(type: Type): boolean {
+        if (type instanceof ArrayType) {
+            const atype = type as ArrayType;
+            return this.innerType === atype.innerType;
+        } else {
+            return false;
+        }
+    }
+
+    /* public hashCode(): number {
+        return super.hashCode() * 17 + this.innerType.hashCode();
+    } */
+
+    public equals(obj: any): boolean {
+        if (this === obj) {
+            return true;
+        } else if (obj instanceof ArrayType) {
+            return this.match(obj);
+        } else {
+            return false;
+        }
+    }
+
+    public toString(): string {
+        return `Array<${this.innerType}>`;
+    }
+
+    public static instance(classification: Category, innerType: Type[]): ArrayType {
+        return new ArrayType(classification, innerType);
+    }
+}
