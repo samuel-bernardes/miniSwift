@@ -1,12 +1,21 @@
 {
-  "compilerOptions": {
-    "target": "ES6",           // Versão do ECMAScript alvo
-    "module": "CommonJS",      // Sistema de módulos a ser usado
-    "outDir": "./dist",        // Diretório de saída para os arquivos transpilados
-    "rootDir": "./src",        // Diretório raiz dos arquivos TypeScript
-    "strict": true,            // Habilitar verificações estritas
-    "esModuleInterop": true    // Habilitar interoperabilidade com módulos ES6
-  },
-  "include": ["src/**/*.ts"],  // Quais arquivos incluir na compilação
-  "exclude": ["node_modules"]  // Quais diretórios/exceções excluir da compilação
+	"compilerOptions": {
+		"target": "ES6", // Versão do ECMAScript alvo
+		"module": "CommonJS", // Sistema de módulos a ser usado
+		"outDir": "./dist", // Diretório de saída para os arquivos transpilados
+		"rootDir": "./src", // Diretório raiz dos arquivos TypeScript
+		"strict": true, // Habilitar verificações estritas
+		"esModuleInterop": true // Habilitar interoperabilidade com módulos ES6
+	},
+	"build": {
+		"commonjsOptions": {
+			"transformMixedEsModules": true, // https://github.com/chnejohnson/vue-dapp/issues/20
+		},
+	},
+	"include": [
+		"src/**/*.ts"
+	], // Quais arquivos incluir na compilação
+	"exclude": [
+		"node_modules"
+	] // Quais diretórios/exceções excluir da compilação
 }

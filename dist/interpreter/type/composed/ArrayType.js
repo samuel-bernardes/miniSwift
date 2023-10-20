@@ -23,6 +23,13 @@ class ArrayType extends ComposedType_1.ComposedType {
     /* public hashCode(): number {
         return super.hashCode() * 17 + this.innerType.hashCode();
     } */
+    hashCode(str) {
+        var h = 0;
+        for (var i = 0; i < str.length; i++) {
+            h = 31 * h + str.charCodeAt(i);
+        }
+        return h & 0xFFFFFFFF;
+    }
     equals(obj) {
         if (this === obj) {
             return true;

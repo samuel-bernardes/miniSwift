@@ -1,5 +1,5 @@
-import { Type, Category } from '../Type';  // Substitua './type' pelo caminho correto do seu módulo de tipo
-import { PrimitiveType } from './PrimitiveType';
+import { Type, Category } from '../../Type';  // Substitua './type' pelo caminho correto do seu módulo de tipo
+import { PrimitiveType } from '../PrimitiveType';
 
 export class IntType extends PrimitiveType {
     private static readonly type: IntType = new IntType();

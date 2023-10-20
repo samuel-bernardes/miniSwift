@@ -4,7 +4,7 @@ import { Type, Category } from "../type/Type";
 export class Value {
     public readonly type: Type;
     public readonly data: unknown;
-
+    
     constructor(type: Type, data: unknown) {
         switch (type.getCategory()) {
             case Category.Bool:

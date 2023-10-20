@@ -1,7 +1,8 @@
 import { createReadStream, ReadStream } from 'fs';
 import { LexicalAnalysis } from './lexical/LexicalAnalysis';
-import { LanguageException } from './error/LanguageException';
-import { Token } from './lexical/Token';
+import { SyntaticAnalysis } from './syntatic/SyntaticAnalysis';
+import { Command } from './interpreter/command/Command';
+import { Interpreter } from './interpreter/Interpreter';
 
 function runPrompt() {
     const rl = require('readline').createInterface({
@@ -23,9 +24,11 @@ function runFile(filename: string) {
 }
 
 function run(inputStream: ReadStream) {
-    const lex = new LexicalAnalysis(inputStream.toString());
-
-    try {
+    const lex = new LexicalAnalysis('teste.muel');
+    const syntax = new SyntaticAnalysis(lex);
+    const cmd: Command = syntax.process();
+    Interpreter.interpret(cmd);
+    /* try {
         let token: Token;
         do {
             token = lex.nextToken();
@@ -49,7 +52,7 @@ function run(inputStream: ReadStream) {
             console.error(`Internal error: ${e.message}`);
             console.error(e.stack);
         }
-    }
+    } */
 }
 
 const args = process.argv.slice(2);

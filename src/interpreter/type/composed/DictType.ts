@@ -36,7 +36,7 @@ export class DictType extends ComposedType {
         return result;
     } */
 
-    public equals(obj: any): boolean {
+    public equals(obj: unknown): boolean {
         if (this === obj) {
             return true;
         } else if (obj instanceof DictType) {

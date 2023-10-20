@@ -36,6 +36,7 @@ const customErrors: { [key: string]: CustomError } = {
     ConstantAssignment: { msg: 'Atribuição em variável constante [%s]', args: 1 },
     InvalidType: { msg: 'Tipo inválido [%s]', args: 1 },
     InvalidOperation: { msg: 'Operação inválida', args: 0 },
+    InvalidValue: {msg: 'Valor inesperado! ', args: 0 },
 };
 
 export { customErrors };

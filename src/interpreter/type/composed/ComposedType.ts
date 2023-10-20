@@ -12,11 +12,11 @@ export abstract class ComposedType extends Type {
         switch (classification) {
             case Category.Array:
                 if (innerTypes.length === 1) {
-                    return ArrayType.instance(classification,innerTypes);
+                    return ArrayType.instance(classification, innerTypes);
                 }
             case Category.Dict:
                 if (innerTypes.length === 2) {
-                    return DictType.instance(classification,innerTypes);
+                    return DictType.instance(classification, innerTypes);
                 }
             default:
                 throw new TypeException;
