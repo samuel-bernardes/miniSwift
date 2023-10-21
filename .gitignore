@@ -1,3 +1,8 @@
 node_modules/
 *.mswift
-*/dist*
+dist/
+*.muel
+.vs/ProjectSettings.json
+.vs/slnx.sqlite
+.vs/VSWorkspaceState.json
+.vs/miniSwift/v16/.suo

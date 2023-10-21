@@ -1,3 +1,4 @@
+import exp from "constants";
 import { LanguageException, customErrors } from "../error/LanguageException";
 import { Environment } from "../interpreter/Environment";
 import { Interpreter } from "../interpreter/Interpreter";
@@ -5,6 +6,7 @@ import { AssignCommand } from "../interpreter/command/AssingCommand";
 import { BlocksCommand } from "../interpreter/command/BlocksCommand";
 import { Command } from "../interpreter/command/Command";
 import { DumpCommand } from "../interpreter/command/DumpCommand";
+import { InitializeCommand } from "../interpreter/command/InitializeCommand";
 import { PrintCommand } from "../interpreter/command/PrintCommand";
 import { ConstExpr } from "../interpreter/expr/ConstExpr";
 import { Expr } from "../interpreter/expr/Expr";
@@ -26,13 +28,13 @@ export class SyntaticAnalysis {
 
     private lex: LexicalAnalysis;
     private current: Token;
-    private previous: Token | null;
+    private previous: Token;
     private environment: Environment;
 
     constructor(lex: LexicalAnalysis) {
         this.lex = lex;
         this.current = lex.nextToken();
-        this.previous = null;
+        this.previous = new Token("", Token.TokenType.END_OF_FILE, null);
         this.environment = Interpreter.globals;
     }
 
@@ -140,14 +142,18 @@ export class SyntaticAnalysis {
     }
 
     // <decl> ::= <var> | <let>
-    private procDecl(): void {
+    private procDecl(): Command | null {
+        let cmd: Command | null = null;
         if (this.check([Token.TokenType.VAR])) {
+            //TODO
             this.procVar();
         } else if (this.check([Token.TokenType.LET])) {
-            this.procLet();
+            cmd = this.procLet();
         } else {
             this.reportError();
         }
+
+        return cmd;
     }
 
     // <cmd> ::= <block> | <decl> | <print> | <dump> | <if> | <while> | <for> | <assign>
@@ -157,7 +163,7 @@ export class SyntaticAnalysis {
         if (this.check([Token.TokenType.OPEN_CUR])) {
             cmd = this.procBlock();
         } else if (this.check([Token.TokenType.VAR, Token.TokenType.LET])) {
-            this.procDecl();
+            cmd = this.procDecl();
         } else if (this.check([Token.TokenType.PRINT, Token.TokenType.PRINTLN])) {
             cmd = this.procPrint();
         } else if (this.check([Token.TokenType.DUMP])) {
@@ -218,25 +224,40 @@ export class SyntaticAnalysis {
     }
 
     // <let> ::= let <name> ':' <type> '=' <expr> { ',' <name> ':' <type> '=' <expr> } [';']
-    private procLet() {
+    private procLet(): BlocksCommand {
         this.eat(Token.TokenType.LET);
-        this.procName();
+        let bline: number = this.previous.line;
+        let name: Token = this.procName();
         this.eat(Token.TokenType.COLON);
-        this.procType();
+        let type: Type = this.procType();
+        let v: Variable = this.environment.declare(name, type, true);
         this.eat(Token.TokenType.ASSIGN);
-        this.procExpr();
+        let line: number = this.previous.line;
+        let expr: Expr = this.procExpr();
+
+        let cmds: Command[] = [];
+        let icmd: InitializeCommand = new InitializeCommand(line, v, expr);
+        cmds.push(icmd);
 
         while (this.match([Token.TokenType.COMMA])) {
-            this.procName();
+            name = this.procName();
             this.eat(Token.TokenType.COLON);
-            this.procType();
+            type = this.procType();
 
-            if (this.match([Token.TokenType.ASSIGN])) {
-                this.procExpr();
-            }
+            v = this.environment.declare(name, type, true);
+
+            this.eat(Token.TokenType.ASSIGN);
+            expr = this.procExpr();
+            line = this.previous.line;
+
+            icmd = new InitializeCommand(line, v, expr);
+            cmds.push(icmd);
         }
 
         this.match([Token.TokenType.SEMICOLON]);
+
+        let bcmd: BlocksCommand = new BlocksCommand(bline, cmds);
+        return bcmd;
     }
 
     // <print> ::= (print | println) '(' <expr> ')' [';']
