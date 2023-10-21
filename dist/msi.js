@@ -47,7 +47,6 @@ function streamToString(stream) {
     var _a, stream_1, stream_1_1;
     var _b, e_1, _c, _d;
     return __awaiter(this, void 0, void 0, function* () {
-        // lets have a ReadableStream as a stream variable
         const chunks = [];
         try {
             for (_a = true, stream_1 = __asyncValues(stream); stream_1_1 = yield stream_1.next(), _b = stream_1_1.done, !_b; _a = true) {
