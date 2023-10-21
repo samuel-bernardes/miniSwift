@@ -288,7 +288,6 @@ class SyntaticAnalysis {
             lhs = rhs;
             rhs = this.procExpr();
         }
-        console.log("olá", rhs);
         this.match([Token_1.Token.TokenType.SEMICOLON]);
         if (lhs === null) {
             throw LanguageException_1.LanguageException.instance(line, LanguageException_1.customErrors["InvalidOperation"]);

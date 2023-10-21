@@ -1,8 +1,19 @@
+import * as fs from 'fs';
 import { createReadStream, ReadStream } from 'fs';
 import { LexicalAnalysis } from './lexical/LexicalAnalysis';
 import { SyntaticAnalysis } from './syntatic/SyntaticAnalysis';
 import { Command } from './interpreter/command/Command';
 import { Interpreter } from './interpreter/Interpreter';
+
+async function streamToString(stream: ReadStream): Promise<string> {
+    const chunks = [];
+
+    for await (const chunk of stream) {
+        chunks.push(Buffer.from(chunk));
+    }
+
+    return Buffer.concat(chunks).toString("utf-8");
+}
 
 function runPrompt() {
     const rl = require('readline').createInterface({
@@ -12,19 +23,33 @@ function runPrompt() {
 
     rl.prompt();
 
-    rl.on('line', (line: ReadStream) => {
-        run(line);
+    let stringInput = "";
+
+    rl.on('line', async (line: ReadStream) => {
+
+        if (line === null) {
+            rl.close();
+            return;
+        }
+
+        stringInput = await streamToString(line);
+
+        run(stringInput.split(''));
         rl.prompt();
+
+    });
+
+    rl.on('close', () => {
+        process.exit(0);
     });
 }
 
 function runFile(filename: string) {
-    const fileStream: ReadStream = createReadStream(filename);
-    run(fileStream);
+    run(fs.readFileSync(filename, 'utf8').split(''));
 }
 
-function run(inputStream: ReadStream) {
-    const lex = new LexicalAnalysis('teste.muel');
+function run(inputString: string[]) {
+    const lex = new LexicalAnalysis(inputString);
     const syntax = new SyntaticAnalysis(lex);
     const cmd: Command = syntax.process();
     Interpreter.interpret(cmd);

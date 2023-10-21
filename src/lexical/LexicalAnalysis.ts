@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import { Token } from './Token';
 import { InternalException } from '../error/InternalException';
 import { Value } from '../interpreter/value/Value';
@@ -68,8 +67,8 @@ export class LexicalAnalysis {
 	private input: string[];
 	private position: number;
 
-	constructor(filename: string) {
-		this.input = fs.readFileSync(filename, 'utf8').split('');
+	constructor(input: string[]) {
+		this.input = input;
 		this.line = 1;
 		this.position = 0;
 	}
