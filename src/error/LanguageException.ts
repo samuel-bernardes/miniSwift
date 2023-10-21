@@ -21,20 +21,20 @@ export class LanguageException extends Error {
             throw new Error('Número incorreto de argumentos fornecidos para a exceção.');
         }
 
-        const msg = error.args === 0 ? error.msg : `${error.msg} ${args.join(', ')}`;
+        const msg = error.args === 0 ? error.msg : `${error.msg} [${args[0]}]`;
         return new LanguageException(line, msg);
     }
 }
 
 const customErrors: { [key: string]: CustomError } = {
-    InvalidLexeme: { msg: 'Lexema inválido [%s]', args: 1 },
+    InvalidLexeme: { msg: `Lexema inválido`, args: 1 },
     UnexpectedEOF: { msg: 'Fim de arquivo inesperado', args: 0 },
-    UnexpectedLexeme: { msg: 'Lexema não esperado [%s]', args: 1 },
-    UndeclaredVariable: { msg: 'Variável não declarada [%s]', args: 1 },
-    AlreadyDeclaredVariable: { msg: 'Variável já declarada anteriormente [%s]', args: 1 },
-    UninitializedVariable: { msg: 'Variável não inicializada [%s]', args: 1 },
-    ConstantAssignment: { msg: 'Atribuição em variável constante [%s]', args: 1 },
-    InvalidType: { msg: 'Tipo inválido [%s]', args: 1 },
+    UnexpectedLexeme: { msg: 'Lexema não esperado', args: 1 },
+    UndeclaredVariable: { msg: 'Variável não declarada', args: 1 },
+    AlreadyDeclaredVariable: { msg: 'Variável já declarada anteriormente', args: 1 },
+    UninitializedVariable: { msg: 'Variável não inicializada', args: 1 },
+    ConstantAssignment: { msg: 'Atribuição em variável constante', args: 1 },
+    InvalidType: { msg: 'Tipo inválido', args: 1 },
     InvalidOperation: { msg: 'Operação inválida', args: 0 },
     InvalidValue: {msg: 'Valor inesperado! ', args: 0 },
 };

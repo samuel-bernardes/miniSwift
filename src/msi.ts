@@ -4,6 +4,7 @@ import { LexicalAnalysis } from './lexical/LexicalAnalysis';
 import { SyntaticAnalysis } from './syntatic/SyntaticAnalysis';
 import { Command } from './interpreter/command/Command';
 import { Interpreter } from './interpreter/Interpreter';
+import { LanguageException } from './error/LanguageException';
 
 async function streamToString(stream: ReadStream): Promise<string> {
     const chunks = [];
@@ -49,10 +50,21 @@ function runFile(filename: string) {
 }
 
 function run(inputString: string[]) {
-    const lex = new LexicalAnalysis(inputString);
-    const syntax = new SyntaticAnalysis(lex);
-    const cmd: Command = syntax.process();
-    Interpreter.interpret(cmd);
+    try{
+        const lex = new LexicalAnalysis(inputString);
+        const syntax = new SyntaticAnalysis(lex);
+        const cmd: Command = syntax.process();
+        Interpreter.interpret(cmd);
+    }
+    catch (e: any) {
+        if (e instanceof LanguageException) {
+            console.log(e.message);
+        } else {
+            console.error(`Internal error: ${e.message}`);
+            console.error(e.stack);
+        }
+    }
+    
     /* try {
         let token: Token;
         do {
