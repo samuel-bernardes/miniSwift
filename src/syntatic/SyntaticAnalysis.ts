@@ -152,7 +152,7 @@ export class SyntaticAnalysis {
         let cmd: Command | null = null;
         if (this.check([Token.TokenType.VAR])) {
             //TODO
-            this.procVar();
+            cmd = this.procVar();
         } else if (this.check([Token.TokenType.LET])) {
             cmd = this.procLet();
         } else {
@@ -203,30 +203,45 @@ export class SyntaticAnalysis {
 
 
     // <var> ::= var <name> ':' <type> [ '=' <expr> ] { ',' <name> ':' <type> [ '=' <expr> ] } [';']
-    private procVar() {
+    private procVar(): BlocksCommand {
         this.eat(Token.TokenType.VAR);
+        let bline: number = this.previous.line;
         let name: Token = this.procName();
         this.eat(Token.TokenType.COLON);
 
         let type: Type = this.procType();
-
         let v: Variable = this.environment.declare(name, type, false);
-
+        
+        let cmds: Command[] = [];
         if (this.match([Token.TokenType.ASSIGN])) {
-            this.procExpr();
+            let line: number = this.previous.line;
+            let expr: Expr = this.procExpr();
+
+            
+            let icmd: InitializeCommand = new InitializeCommand(line, v, expr);
+            cmds.push(icmd);
         }
 
         while (this.match([Token.TokenType.COMMA])) {
-            this.procName();
+            name = this.procName();
             this.eat(Token.TokenType.COLON);
-            this.procType();
+
+            type= this.procType();
+            v = this.environment.declare(name, type, false);
 
             if (this.match([Token.TokenType.ASSIGN])) {
-                this.procExpr();
+                let line: number = this.previous.line;
+                let expr: Expr = this.procExpr();
+
+                let cmds: Command[] = [];
+                let icmd: InitializeCommand = new InitializeCommand(line, v, expr);
+                cmds.push(icmd);
             }
         }
 
         this.match([Token.TokenType.SEMICOLON]);
+        let bcmd: BlocksCommand = new BlocksCommand(bline, cmds);
+        return bcmd;
     }
 
     // <let> ::= let <name> ':' <type> '=' <expr> { ',' <name> ':' <type> '=' <expr> } [';']
