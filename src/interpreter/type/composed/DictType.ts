@@ -28,14 +28,6 @@ export class DictType extends ComposedType {
         }
     }
 
-    /* public hashCode(): number {
-        const prime = 31;
-        let result = super.hashCode();
-        result = prime * result + this.keyType.hashCode();
-        result = prime * result + this.valueType.hashCode();
-        return result;
-    } */
-
     public equals(obj: unknown): boolean {
         if (this === obj) {
             return true;
@@ -50,7 +42,7 @@ export class DictType extends ComposedType {
         return `Dict<${this.keyType},${this.valueType}>`;
     }
 
-    public static instance(classification: Category, innerTypes: Type[]): DictType {
-        return new DictType(classification,innerTypes);
+    public static instance(classification: Category, ...args: Type[]): DictType {
+        return new DictType(Category.Dict, args);
     }
 }
