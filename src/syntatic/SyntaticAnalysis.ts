@@ -26,6 +26,7 @@ import { Value } from "../interpreter/value/Value";
 import { LexicalAnalysis } from "../lexical/LexicalAnalysis";
 import { Token } from "../lexical/Token";
 import { InternalException } from "../error/InternalException";
+import { IfCommand } from "../interpreter/command/IfCommand";
 
 export class SyntaticAnalysis {
 
@@ -172,7 +173,7 @@ export class SyntaticAnalysis {
         } else if (this.check([Token.TokenType.DUMP])) {
             cmd = this.procDump();
         } else if (this.check([Token.TokenType.IF])) {
-            this.procIf();
+            cmd = this.procIf();
         } else if (this.check([Token.TokenType.WHILE])) {
             cmd = this.procWhile();
         } else if (this.check([Token.TokenType.FOR])) {
@@ -306,13 +307,17 @@ export class SyntaticAnalysis {
     }
 
     // <if> ::= if <expr> <cmd> [ else <cmd> ]
-    private procIf() {
+    private procIf(): IfCommand {
         this.eat(Token.TokenType.IF);
-        this.procExpr();
-        this.procCmd();
+        let elseCmd: Command | undefined = undefined;
+        let line: number = this.previous.line;
+        let expr: Expr = this.procExpr();
+        let thenCmd: Command = this.procCmd();
         if (this.match([Token.TokenType.ELSE])) {
-            this.procCmd();
+            elseCmd = this.procCmd();
         }
+        let icmd: IfCommand = new IfCommand(line, expr, thenCmd, elseCmd);
+        return icmd;
     }
 
     // <while> ::= while <expr> <cmd>
