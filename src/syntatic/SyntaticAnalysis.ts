@@ -7,9 +7,11 @@ import { BlocksCommand } from "../interpreter/command/BlocksCommand";
 import { Command } from "../interpreter/command/Command";
 import { DumpCommand } from "../interpreter/command/DumpCommand";
 import { InitializeCommand } from "../interpreter/command/InitializeCommand";
+import { WhileCommand } from "../interpreter/command/WhileCommand";
 import { PrintCommand } from "../interpreter/command/PrintCommand";
 import { ConstExpr } from "../interpreter/expr/ConstExpr";
 import { Expr } from "../interpreter/expr/Expr";
+import { BinaryExpr, BinaryOperator } from "../interpreter/expr/BinaryExpr";
 import { SetExpr } from "../interpreter/expr/SetExpr";
 import { Operator, UnaryExpr } from "../interpreter/expr/UnaryExpr";
 import { Variable } from "../interpreter/expr/Variable";
@@ -23,6 +25,7 @@ import { StringType } from "../interpreter/type/primitive/types/StringType";
 import { Value } from "../interpreter/value/Value";
 import { LexicalAnalysis } from "../lexical/LexicalAnalysis";
 import { Token } from "../lexical/Token";
+import { InternalException } from "../error/InternalException";
 
 export class SyntaticAnalysis {
 
@@ -171,7 +174,7 @@ export class SyntaticAnalysis {
         } else if (this.check([Token.TokenType.IF])) {
             this.procIf();
         } else if (this.check([Token.TokenType.WHILE])) {
-            this.procWhile();
+            cmd = this.procWhile();
         } else if (this.check([Token.TokenType.FOR])) {
             this.procFor();
         } else if (this.check([Token.TokenType.NOT, Token.TokenType.SUB,
@@ -313,10 +316,14 @@ export class SyntaticAnalysis {
     }
 
     // <while> ::= while <expr> <cmd>
-    private procWhile() {
+    private procWhile(): WhileCommand {
         this.eat(Token.TokenType.WHILE);
-        this.procExpr();
-        this.procCmd();
+        let line: number = this.previous.line;
+        let expr: Expr = this.procExpr();
+        let cmd: Command = this.procCmd();
+
+        let wcmd: WhileCommand = new WhileCommand(line, expr, cmd);
+        return wcmd;
     }
 
     // <for> ::= for ( <name> | ( var | let ) <name> ':' <type> ) in <expr> <cmd>
@@ -459,24 +466,55 @@ export class SyntaticAnalysis {
 
     // <rel> ::= <arith> [ ( '<' | '>' | '<=' | '>=' | '==' | '!=' ) <arith> ]
     private procRel(): Expr {
-        let expr: Expr = this.procArith();
+        let left: Expr = this.procArith();
 
         if (this.match([
             Token.TokenType.LOWER_THAN, Token.TokenType.GREATER_THAN, Token.TokenType.LOWER_EQUAL,
             Token.TokenType.GREATER_EQUAL, Token.TokenType.EQUAL, Token.TokenType.NOT_EQUAL
         ])) {
-            this.procArith();
-        }
+            let line: number = this.previous.line;
 
-        return expr;
+            let op: BinaryOperator;
+
+            switch(this.previous.type){
+                case Token.TokenType.LOWER_THAN:
+                    op = BinaryOperator.LowerThan;
+                    break;
+                case Token.TokenType.GREATER_THAN:
+                    op = BinaryOperator.GreaterThan;
+                    break;
+                case Token.TokenType.LOWER_EQUAL:
+                    op = BinaryOperator.LowerEqual;
+                    break;
+                case Token.TokenType.GREATER_EQUAL:
+                    op = BinaryOperator.GreaterEqual;
+                    break;
+                case Token.TokenType.EQUAL:
+                    op = BinaryOperator.Equal;
+                    break;
+                case Token.TokenType.NOT_EQUAL:
+                    op = BinaryOperator.NotEqual;
+                    break;
+                default:
+                    throw new InternalException("Unreacheable");
+            }
+            let right: Expr = this.procArith();
+            left = new BinaryExpr(line, left, op, right);
+        }
+        
+        return left;
     }
     // <arith> ::= <term> { ( '+' | '-' ) <term> }
     private procArith(): Expr {
-        let expr: Expr = this.procTerm();
+        let left: Expr = this.procTerm();
         while (this.match([Token.TokenType.ADD, Token.TokenType.SUB])) {
-            this.procTerm();
+            let line: number = this.previous.line;
+            let op: BinaryOperator = this.previous.type == Token.TokenType.ADD ? 
+                BinaryOperator.Add : BinaryOperator.Sub;
+            let right: Expr = this.procTerm();
+            left = new BinaryExpr(line, left, op, right);
         }
-        return expr;
+        return left;
     }
 
     // <term> ::= <prefix> { ( '*' | '/' ) <prefix> }
