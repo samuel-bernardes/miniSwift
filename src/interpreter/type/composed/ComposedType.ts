@@ -4,19 +4,20 @@ import { ArrayType } from './ArrayType'; // Substitua './arraytype' pelo caminho
 import { DictType } from './DictType'; // Substitua './dicttype' pelo caminho correto do seu módulo de DictType
 
 export abstract class ComposedType extends Type {
+
     protected constructor(classification: Category) {
         super(classification);
     }
 
-    public static instance(classification: Category, innerTypes: Type[]): ComposedType {
+    public static instance(classification: Category, ...args: Type[]): ComposedType {
         switch (classification) {
             case Category.Array:
-                if (innerTypes.length === 1) {
-                    return ArrayType.instance(classification, innerTypes);
+                if (args.length === 1) {
+                    return ArrayType.instance(classification, args[0]);
                 }
             case Category.Dict:
-                if (innerTypes.length === 2) {
-                    return DictType.instance(classification, innerTypes);
+                if (args.length === 2) {
+                    return DictType.instance(classification, args[0], args[1]);
                 }
             default:
                 throw new TypeException;

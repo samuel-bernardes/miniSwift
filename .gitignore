@@ -1,6 +1,7 @@
 node_modules/
-*.mswift
+/dist/
 dist/
+*.mswift
 *.muel
 .vs/ProjectSettings.json
 .vs/slnx.sqlite

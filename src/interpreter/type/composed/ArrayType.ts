@@ -4,9 +4,9 @@ import { ComposedType } from './ComposedType';
 export class ArrayType extends ComposedType {
     private innerType: Type;
 
-    private constructor(classification: Category, innerType: Type[]) {
+    private constructor(innerType: Type) {
         super(Category.Array);
-        this.innerType = innerType[0];
+        this.innerType = innerType;
     }
 
     public getInnerType(): Type {
@@ -21,10 +21,6 @@ export class ArrayType extends ComposedType {
             return false;
         }
     }
-
-    /* public hashCode(): number {
-        return super.hashCode() * 17 + this.innerType.hashCode();
-    } */
 
     public hashCode(str: string): number {
         var h: number = 0;
@@ -48,7 +44,7 @@ export class ArrayType extends ComposedType {
         return `Array<${this.innerType}>`;
     }
 
-    public static instance(classification: Category, innerType: Type[]): ArrayType {
-        return new ArrayType(classification, innerType);
+    public static instance(classification: Category, innerType: Type): ArrayType {
+        return new ArrayType(innerType);
     }
 }
