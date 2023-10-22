@@ -1,3 +1,4 @@
+import { LanguageException, customErrors } from "../../error/LanguageException";
 import { Expr } from "../expr/Expr";
 import { BoolType } from "../type/primitive/types/BoolType";
 import { Value } from "../value/Value";
@@ -21,12 +22,14 @@ export class IfCommand extends Command {
         let boolType: BoolType = BoolType.instance();
         if (boolType.match(value.type)) {
             let b: boolean = Boolean(value.data);
-            if(b){
+            if (b) {
                 this.cmds.execute();
             }
-            else if (this.elseCmd){
+            else if (this.elseCmd) {
                 this.elseCmd.execute();
             }
+        } else {
+            throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], value.type.toString());
         }
 
     }
