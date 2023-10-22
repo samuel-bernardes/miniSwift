@@ -29,6 +29,7 @@ import { IfCommand } from "../interpreter/command/IfCommand";
 import { ArrayType, ComposedType, DictType } from "../interpreter/type/composed/ComposedType";
 import { ArrayExpr } from "../interpreter/expr/ArrayExpr";
 import { DictExpr, DictItem } from "../interpreter/expr/DictExpr";
+import { ForCommand } from "../interpreter/command/ForCommand";
 
 export class SyntaticAnalysis {
 
@@ -128,17 +129,21 @@ export class SyntaticAnalysis {
     }
 
     // <block> ::= '{' <code> '}'
-    private procBlock(): BlocksCommand {
+    private procBlock(env?: Environment): BlocksCommand {
         this.eat(Token.TokenType.OPEN_CUR);
 
         let old: Environment = this.environment;
-        this.environment = new Environment(old);
-
+        if(env == undefined){
+            this.environment = new Environment(old);
+        }
+        else{
+            this.environment = env;
+        }
+        
         let bcmd: BlocksCommand;
 
-
         try {
-            bcmd = this.procCode();;
+            bcmd = this.procCode();
             this.eat(Token.TokenType.CLOSE_CUR);
         } finally {
             this.environment = old;
@@ -151,7 +156,6 @@ export class SyntaticAnalysis {
     private procDecl(): Command | null {
         let cmd: Command | null = null;
         if (this.check([Token.TokenType.VAR])) {
-            //TODO
             cmd = this.procVar();
         } else if (this.check([Token.TokenType.LET])) {
             cmd = this.procLet();
@@ -163,11 +167,11 @@ export class SyntaticAnalysis {
     }
 
     // <cmd> ::= <block> | <decl> | <print> | <dump> | <if> | <while> | <for> | <assign>
-    private procCmd(): Command | any {
+    private procCmd(env?: Environment): Command | any {
         let cmd: Command | null = null; // Inicialize com null
 
         if (this.check([Token.TokenType.OPEN_CUR])) {
-            cmd = this.procBlock();
+            cmd = this.procBlock(env);
         } else if (this.check([Token.TokenType.VAR, Token.TokenType.LET])) {
             cmd = this.procDecl();
         } else if (this.check([Token.TokenType.PRINT, Token.TokenType.PRINTLN])) {
@@ -179,7 +183,7 @@ export class SyntaticAnalysis {
         } else if (this.check([Token.TokenType.WHILE])) {
             cmd = this.procWhile();
         } else if (this.check([Token.TokenType.FOR])) {
-            this.procFor();
+            cmd = this.procFor();
         } else if (this.check([Token.TokenType.NOT, Token.TokenType.SUB,
         Token.TokenType.OPEN_PAR, Token.TokenType.FALSE,
         Token.TokenType.TRUE, Token.TokenType.INTEGER_LITERAL,
@@ -349,21 +353,27 @@ export class SyntaticAnalysis {
     }
 
     // <for> ::= for ( <name> | ( var | let ) <name> ':' <type> ) in <expr> <cmd>
-    private procFor() {
+    private procFor(): ForCommand {
         this.eat(Token.TokenType.FOR);
+        let line: number = this.previous.line;
+        let env: Environment = new Environment(this.environment);
+        let v: Variable;
         if (this.check([Token.TokenType.NAME])) {
-            this.procName();
+            v = env.get(this.procName());
         } else if (this.match([Token.TokenType.VAR, Token.TokenType.LET])) {
-            this.procName();
+            let name: Token = this.procName();
             this.eat(Token.TokenType.COLON);
-            this.procType();
+            let type: Type = this.procType();
+            v = env.declare(name, type, false);
         } else {
-            this.reportError();
+            throw this.reportError();
         }
 
         this.eat(Token.TokenType.IN);
-        this.procExpr();
-        this.procCmd();
+        let expr = this.procExpr();
+        let cmd = this.procCmd(env);
+        let fcmd: ForCommand = new ForCommand(line, expr, cmd, v);
+        return fcmd;
     }
 
     // <assign> ::= [ <expr> '=' ] <expr> [ ';' ]
