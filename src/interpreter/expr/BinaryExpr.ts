@@ -1,5 +1,7 @@
 import { InternalException } from "../../error/InternalException";
 import { LanguageException, customErrors } from "../../error/LanguageException";
+import { Category } from "../type/Type";
+import { ArrayType } from "../type/composed/ComposedType";
 import { BoolType } from "../type/primitive/types/BoolType";
 import { CharType } from "../type/primitive/types/CharType";
 import { FloatType } from "../type/primitive/types/FloatType";
@@ -351,6 +353,16 @@ export class BinaryExpr extends Expr {
             } else {
                 throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
             }
+        } else if (lvalue.type.getCategory() == Category.Array) {
+            if (rvalue.type.getCategory() == Category.Array) {
+
+                let v: Value = new Value(ArrayType.instance(Category.Array, rvalue.type), [...lvalue.data as Array<any>, ...rvalue.data as Array<any>]);
+                return v;
+
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+            }
+
         } else {
             throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], lvalue.type.toString());
         }

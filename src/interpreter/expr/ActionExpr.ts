@@ -1,3 +1,4 @@
+import { LanguageException, customErrors } from "../../error/LanguageException";
 import { FloatType } from "../type/primitive/types/FloatType";
 import { StringType } from "../type/primitive/types/StringType";
 import { Value } from "../value/Value";
@@ -36,10 +37,9 @@ export class ActionExpr extends Expr {
             case ActionOperator.Random:
                 throw new Value(FloatType.instance(), randomFloat());;
             default:
-                throw new Error;
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidOperation);
         }
     }
-
 }
 
 export enum ActionOperator {
