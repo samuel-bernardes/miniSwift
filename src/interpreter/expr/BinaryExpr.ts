@@ -356,7 +356,7 @@ export class BinaryExpr extends Expr {
         } else if (lvalue.type.getCategory() == Category.Array) {
             if (rvalue.type.getCategory() == Category.Array) {
 
-                let v: Value = new Value(ArrayType.instance(Category.Array, rvalue.type), [...lvalue.data as Array<any>, ...rvalue.data as Array<any>]);
+                let v: Value = new Value(ArrayType.instance(Category.Array, rvalue.type), [...lvalue.data as Array<unknown>, ...rvalue.data as Array<any>]);
                 return v;
 
             } else {

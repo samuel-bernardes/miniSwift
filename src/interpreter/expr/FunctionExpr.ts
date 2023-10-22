@@ -76,7 +76,11 @@ export class FunctionExpr extends Expr {
                     if ((this.exprBase.expr().type.getCategory() == Category.Array)) {
                         let valueExp = this.exprBase.expr().data as Array<Value>;
 
-                        return new Value(ArrayType.instance(Category.Array, valueExp[0].type), valueExp.push(this.param.expr()));
+                        let dataExpr = valueExp.map((item) => {
+                            return item.data;
+                        })
+
+                        return new Value(ArrayType.instance(Category.Array, valueExp[0].type), dataExpr.push(this.param.expr().data));
                     } else {
                         throw LanguageException.instance(super.getLine(), customErrors.InvalidType, this.exprBase.expr().toString());
                     }
@@ -86,7 +90,11 @@ export class FunctionExpr extends Expr {
                     if ((this.exprBase.expr().type.getCategory() == Category.Array)) {
                         let valueExp = this.exprBase.expr().data as Array<Value>;
 
-                        return new Value(BoolType.instance(), Boolean(valueExp.includes(this.param.expr())));
+                        let dataExpr = valueExp.map((item) => {
+                            return item.data;
+                        })
+
+                        return new Value(BoolType.instance(), Boolean(dataExpr.includes(this.param.expr().data)));
                     } else {
                         throw LanguageException.instance(super.getLine(), customErrors.InvalidType, this.exprBase.expr().toString());
                     }
@@ -95,8 +103,6 @@ export class FunctionExpr extends Expr {
                 throw LanguageException.instance(super.getLine(), customErrors.InvalidOperation);
         }
     }
-
-
 }
 
 export enum FuncOp {
