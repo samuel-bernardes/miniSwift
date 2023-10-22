@@ -95,7 +95,7 @@ export class SyntaticAnalysis {
             case Token.TokenType.END_OF_FILE:
                 throw LanguageException.instance(line, customErrors.UnexpectedEOF);
             default:
-                throw LanguageException.instance(line, customErrors.UnexpectedLexeme, this.current.lexeme);
+                throw LanguageException.instance(line, customErrors.UnexpectedLexeme, this.current.lexeme + " " + this.current.literal?.data);
         }
     }
 
@@ -133,13 +133,13 @@ export class SyntaticAnalysis {
         this.eat(Token.TokenType.OPEN_CUR);
 
         let old: Environment = this.environment;
-        if(env == undefined){
+        if (env == undefined) {
             this.environment = new Environment(old);
         }
-        else{
+        else {
             this.environment = env;
         }
-        
+
         let bcmd: BlocksCommand;
 
         try {
@@ -215,13 +215,11 @@ export class SyntaticAnalysis {
 
         let type: Type = this.procType();
         let v: Variable = this.environment.declare(name, type, false);
-        
+
         let cmds: Command[] = [];
         if (this.match([Token.TokenType.ASSIGN])) {
             let line: number = this.previous.line;
             let expr: Expr = this.procExpr();
-
-            
             let icmd: InitializeCommand = new InitializeCommand(line, v, expr);
             cmds.push(icmd);
         }
@@ -230,7 +228,7 @@ export class SyntaticAnalysis {
             name = this.procName();
             this.eat(Token.TokenType.COLON);
 
-            type= this.procType();
+            type = this.procType();
             v = this.environment.declare(name, type, false);
 
             if (this.match([Token.TokenType.ASSIGN])) {
@@ -382,9 +380,10 @@ export class SyntaticAnalysis {
         let rhs: Expr = this.procExpr();
 
         let lhs: SetExpr | null = null; // Inicializa com null
+
         if (this.match([Token.TokenType.ASSIGN])) {
             if (!(rhs instanceof SetExpr)) {
-                throw LanguageException.instance(this.previous!.line, customErrors["InvalidOperation"]);
+                throw LanguageException.instance(this.previous!.line, customErrors.InvalidOperation);
             }
 
             lhs = rhs as SetExpr;
@@ -394,7 +393,7 @@ export class SyntaticAnalysis {
         this.match([Token.TokenType.SEMICOLON]);
 
         if (lhs === null) {
-            throw LanguageException.instance(line, customErrors["InvalidOperation"]);
+            throw LanguageException.instance(line, customErrors.InvalidOperation);
         }
 
         let acmd: AssignCommand = new AssignCommand(line, rhs, lhs);
@@ -411,16 +410,14 @@ export class SyntaticAnalysis {
         } else if (this.check([Token.TokenType.ARRAY, Token.TokenType.DICT])) {
             return this.procComposed();
         } else {
-            this.reportError();
-            return BoolType.instance();
-            // Adicione um retorno padrão para tratar o erro
+            throw this.reportError();
         }
     }
 
     // <primitive> ::= Bool | Int | Float | Char | String
     private procPrimitive(): PrimitiveType {
         if (this.match([Token.TokenType.BOOL, Token.TokenType.INT, Token.TokenType.FLOAT, Token.TokenType.CHAR, Token.TokenType.STRING])) {
-            switch (this.previous!.type) {
+            switch (this.previous.type) {
                 case Token.TokenType.BOOL:
                     return BoolType.instance();
                 case Token.TokenType.INT:
@@ -434,12 +431,9 @@ export class SyntaticAnalysis {
                 default:
                     this.reportError();
             }
-        } else {
-            this.reportError();
         }
 
-        // Você pode lançar uma exceção aqui ou retornar um valor padrão, dependendo dos requisitos do seu código.
-        throw LanguageException.instance(this.previous!.line, customErrors["InvalidValue"]);
+        throw this.reportError();
     }
 
     // <composed> ::= <arraytype> | <dicttype>
@@ -508,7 +502,7 @@ export class SyntaticAnalysis {
 
             let op: BinaryOperator;
 
-            switch(this.previous.type){
+            switch (this.previous.type) {
                 case Token.TokenType.LOWER_THAN:
                     op = BinaryOperator.LowerThan;
                     break;
@@ -533,7 +527,7 @@ export class SyntaticAnalysis {
             let right: Expr = this.procArith();
             left = new BinaryExpr(line, left, op, right);
         }
-        
+
         return left;
     }
 
@@ -542,7 +536,7 @@ export class SyntaticAnalysis {
         let left: Expr = this.procTerm();
         while (this.match([Token.TokenType.ADD, Token.TokenType.SUB])) {
             let line: number = this.previous.line;
-            let op: BinaryOperator = this.previous.type == Token.TokenType.ADD ? 
+            let op: BinaryOperator = this.previous.type == Token.TokenType.ADD ?
                 BinaryOperator.Add : BinaryOperator.Sub;
             let right: Expr = this.procTerm();
             left = new BinaryExpr(line, left, op, right);
@@ -609,7 +603,7 @@ export class SyntaticAnalysis {
     // <rvalue> ::= <const> | <action> | <cast> | <array> | <dict> | <lvalue>
     private procRValue(): Expr {
         let expr: Expr | null = null; // Inicialize com null
-
+        
         if (this.check([
             Token.TokenType.FALSE, Token.TokenType.TRUE,
             Token.TokenType.INTEGER_LITERAL, Token.TokenType.FLOAT_LITERAL,
@@ -644,6 +638,7 @@ export class SyntaticAnalysis {
     // <const> ::= <bool> | <int> | <float> | <char> | <string>
     private procConst(): Expr {
         let value: Value = new Value(BoolType.instance(), false);
+
         if (this.check([Token.TokenType.FALSE, Token.TokenType.TRUE])) {
             value = this.procBool();
         } else if (this.check([Token.TokenType.INTEGER_LITERAL])) {
@@ -809,41 +804,40 @@ export class SyntaticAnalysis {
     private procInt(): Value {
         let value: Value | null = this.current.literal;
         this.eat(Token.TokenType.INTEGER_LITERAL);
-        if (value !== null) {
+        if (value != null) {
             return value;
         } else {
-            throw LanguageException.instance(this.current.line, customErrors["InvalidValue"]);
+            throw LanguageException.instance(this.current.line, customErrors.InvalidValue);
         }
     }
 
     private procFloat(): Value {
         let value: Value | null = this.current.literal;
         this.eat(Token.TokenType.FLOAT_LITERAL);
-        if (value !== null) {
+        if (value != null) {
             return value;
         } else {
-            throw LanguageException.instance(this.current.line, customErrors["InvalidValue"]);
+            throw LanguageException.instance(this.current.line, customErrors.InvalidValue);
         }
     }
 
     private procChar(): Value {
         let value: Value | null = this.current.literal;
         this.eat(Token.TokenType.CHAR_LITERAL);
-        if (value !== null) {
+        if (value != null) {
             return value;
         } else {
-            throw LanguageException.instance(this.current.line, customErrors["InvalidValue"]);
+            throw LanguageException.instance(this.current.line, customErrors.InvalidValue);
         }
     }
 
     private procString(): Value {
         let value: Value | null = this.current.literal;
         this.eat(Token.TokenType.STRING_LITERAL);
-        if (value !== null) {
+        if (value != null) {
             return value;
         } else {
-            // Trate o caso em que o valor é nulo, lançando uma exceção ou fazendo algo apropriado.
-            throw LanguageException.instance(this.current.line, customErrors["InvalidValue"]);
+            throw LanguageException.instance(this.current.line, customErrors.InvalidValue);
         }
     }
 

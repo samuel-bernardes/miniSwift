@@ -229,7 +229,7 @@ export class LexicalAnalysis {
 						state = 10;
 					} else {
 						this.ungetChar();
-						token.type = Token.TokenType.FLOAT;
+						token.type = Token.TokenType.FLOAT_LITERAL;
 						token.literal = new Value(PrimitiveTypes.FloatType.instance(), Number(token.lexeme));
 						state = 15;
 					}

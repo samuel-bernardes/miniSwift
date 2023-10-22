@@ -13,7 +13,6 @@ export class PrintCommand extends Command {
         this.newline = newline;
     }
 
-
     public execute(): void {
         let value: Value = this.expr.expr();
         if (this.newline)
