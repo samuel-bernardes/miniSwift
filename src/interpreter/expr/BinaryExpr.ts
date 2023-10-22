@@ -7,7 +7,7 @@ import { IntType } from "../type/primitive/types/IntType";
 import { StringType } from "../type/primitive/types/StringType";
 import { Value } from "../value/Value";
 import { Expr } from "./Expr";
-class BinaryExpr extends Expr {
+export class BinaryExpr extends Expr {
     private left: Expr;
     private op: BinaryOperator;
     private right: Expr;

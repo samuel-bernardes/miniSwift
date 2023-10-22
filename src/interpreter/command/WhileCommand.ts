@@ -4,7 +4,7 @@ import { BoolType } from "../type/primitive/types/BoolType";
 import { Value } from "../value/Value";
 import { Command } from "./Command";
 
-class WhileCommand extends Command {
+export class WhileCommand extends Command {
 
     private expr: Expr;
     private cmds: Command;

@@ -16,9 +16,10 @@ export class PrintCommand extends Command {
 
     public execute(): void {
         let value: Value = this.expr.expr();
-        console.log(value.data);
         if (this.newline)
-            console.log("");
+            console.log(value.data);
+        else 
+            process.stdout.write("" + value.data);
     }
 
 }
