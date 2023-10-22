@@ -1,8 +1,5 @@
-import { Type, Category } from '../Type'; // Substitua './type' pelo caminho correto do seu módulo de tipo
+import { Type, Category } from '../Type';
 import { TypeException } from '../TypeException';
-import { ArrayType } from './ArrayType'; // Substitua './arraytype' pelo caminho correto do seu módulo de ArrayType
-import { DictType } from './DictType'; // Substitua './dicttype' pelo caminho correto do seu módulo de DictType
-
 export abstract class ComposedType extends Type {
 
     protected constructor(classification: Category) {
@@ -22,5 +19,91 @@ export abstract class ComposedType extends Type {
             default:
                 throw new TypeException;
         }
+    }
+}
+
+export class ArrayType extends ComposedType {
+    private innerType: Type;
+
+    private constructor(innerType: Type) {
+        super(Category.Array);
+        this.innerType = innerType;
+    }
+
+    public getInnerType(): Type {
+        return this.innerType;
+    }
+
+    public match(type: Type): boolean {
+        if (type instanceof ArrayType) {
+            const atype = type as ArrayType;
+            return this.innerType === atype.innerType;
+        } else {
+            return false;
+        }
+    }
+
+    public equals(obj: unknown): boolean {
+        if (this === obj) {
+            return true;
+        } else if (obj instanceof ArrayType) {
+            return this.match(obj);
+        } else {
+            return false;
+        }
+    }
+
+    public toString(): string {
+        return `Array<${this.innerType}>`;
+    }
+
+    public static instance(classification: Category, innerType: Type): ArrayType {
+        return new ArrayType(innerType);
+    }
+}
+
+export class DictType extends ComposedType {
+    private keyType: Type;
+    private valueType: Type;
+
+    private constructor(classification: Category, innerTypes: Type[]) {
+        super(Category.Dict);
+        this.keyType = innerTypes[0];
+        this.valueType = innerTypes[1];
+    }
+
+    public getKeyType(): Type {
+        return this.keyType;
+    }
+
+    public getValueType(): Type {
+        return this.valueType;
+    }
+
+    public match(type: Type): boolean {
+        if (type instanceof DictType) {
+            const dtype = type as DictType;
+            return this.keyType === dtype.keyType && this.valueType === dtype.valueType;
+        } else {
+            return false;
+        }
+    }
+
+    public equals(obj: unknown): boolean {
+        if (this === obj) {
+            return true;
+        } else if (obj instanceof DictType) {
+            return this.match(obj);
+        } else {
+            return false;
+        }
+    }
+
+    public toString(): string {
+        return `Dict<${this.keyType},${this.valueType}>`;
+    }
+
+    public static instance(classification: Category, ...args: Type[]): DictType {
+        return new DictType(Category.Dict, args);
     }
 }

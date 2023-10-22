@@ -1,4 +1,3 @@
-import exp from "constants";
 import { LanguageException, customErrors } from "../error/LanguageException";
 import { Environment } from "../interpreter/Environment";
 import { Interpreter } from "../interpreter/Interpreter";
@@ -27,9 +26,7 @@ import { LexicalAnalysis } from "../lexical/LexicalAnalysis";
 import { Token } from "../lexical/Token";
 import { InternalException } from "../error/InternalException";
 import { IfCommand } from "../interpreter/command/IfCommand";
-import { ComposedType } from "../interpreter/type/composed/ComposedType";
-import { ArrayType } from "../interpreter/type/composed/ArrayType";
-import { DictType } from "../interpreter/type/composed/DictType";
+import { ArrayType, ComposedType, DictType } from "../interpreter/type/composed/ComposedType";
 import { ArrayExpr } from "../interpreter/expr/ArrayExpr";
 
 export class SyntaticAnalysis {

@@ -1,4 +1,5 @@
 import { Category, Type } from "../Type";
+import { TypeException } from "../TypeException";
 import { PrimitiveTypes } from "./types";
 export abstract class PrimitiveType extends Type {
     protected constructor(classification: Category) {
@@ -18,7 +19,7 @@ export abstract class PrimitiveType extends Type {
             case Category.String:
                 return PrimitiveTypes.StringType.instance();
             default:
-                throw new Error('TypeException');
+                throw new TypeException;
         }
     }
 }

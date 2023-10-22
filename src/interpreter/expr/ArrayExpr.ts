@@ -1,6 +1,6 @@
 import { LanguageException, customErrors } from "../../error/LanguageException";
 import { Category, Type } from "../type/Type";
-import { ArrayType } from "../type/composed/ArrayType";
+import { ArrayType } from "../type/composed/ComposedType";
 import { Value } from "../value/Value";
 import { Expr } from "./Expr";
 

@@ -1,6 +1,6 @@
 import { LanguageException, customErrors } from "../../error/LanguageException";
 import { Category } from "../type/Type";
-import { DictType } from "../type/composed/DictType";
+import { DictType } from "../type/composed/ComposedType";
 import { CharType } from "../type/primitive/types/CharType";
 import { FloatType } from "../type/primitive/types/FloatType";
 import { IntType } from "../type/primitive/types/IntType";

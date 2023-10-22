@@ -2,7 +2,6 @@ import { LanguageException, customErrors } from "../../error/LanguageException";
 import { Expr } from "../expr/Expr";
 import { Variable } from "../expr/Variable";
 import { Category } from "../type/Type";
-import { ArrayType } from "../type/composed/ArrayType";
 import { BoolType } from "../type/primitive/types/BoolType";
 import { Value } from "../value/Value";
 import { Command } from "./Command";
