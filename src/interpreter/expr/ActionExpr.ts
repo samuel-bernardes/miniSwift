@@ -1,3 +1,4 @@
+import { FloatType } from "../type/primitive/types/FloatType";
 import { StringType } from "../type/primitive/types/StringType";
 import { Value } from "../value/Value";
 import { Expr } from "./Expr";
@@ -15,6 +16,10 @@ function enterData(): string {
     });
 }
 
+function randomFloat() {
+    return Math.random();
+}
+
 class ActionExpr extends Expr {
 
     private op: ActionOperator;
@@ -29,7 +34,7 @@ class ActionExpr extends Expr {
             case ActionOperator.Read:
                 return new Value(StringType.instance(), enterData().trim());
             case ActionOperator.Random:
-                throw new Error;
+                throw new Value(FloatType.instance(), randomFloat());;
             default:
                 throw new Error;
         }

@@ -1,11 +1,12 @@
 import { InternalException } from "../../error/InternalException";
 import { LanguageException, customErrors } from "../../error/LanguageException";
 import { BoolType } from "../type/primitive/types/BoolType";
+import { CharType } from "../type/primitive/types/CharType";
 import { FloatType } from "../type/primitive/types/FloatType";
 import { IntType } from "../type/primitive/types/IntType";
+import { StringType } from "../type/primitive/types/StringType";
 import { Value } from "../value/Value";
 import { Expr } from "./Expr";
-
 class BinaryExpr extends Expr {
     private left: Expr;
     private op: BinaryOperator;
@@ -68,35 +69,186 @@ class BinaryExpr extends Expr {
     }
 
     private andOp(lvalue: Value, rvalue: Value): Value {
-        throw Error;
+        let boolType: BoolType = BoolType.instance();
+        if (boolType.match(lvalue.type)) {
+            if (boolType.match(rvalue.type)) {
+                let m: boolean = Boolean(lvalue.data);
+                let n: boolean = Boolean(rvalue.data);
+                let v: Value = new Value(BoolType.instance(), (m && n));
+                return v;
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+            }
+        } else {
+            throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], lvalue.type.toString());
+        }
     }
 
     private orOp(lvalue: Value, rvalue: Value): Value {
-        throw Error;
+        let boolType: BoolType = BoolType.instance();
+        if (boolType.match(lvalue.type)) {
+            if (boolType.match(rvalue.type)) {
+                let m: boolean = Boolean(lvalue.data);
+                let n: boolean = Boolean(rvalue.data);
+                let v: Value = new Value(BoolType.instance(), (m || n));
+                return v;
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+            }
+        } else {
+            throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], lvalue.type.toString());
+        }
     }
 
     private equalOp(lvalue: Value, rvalue: Value): Value {
-        throw Error;
+        if (lvalue.type == rvalue.type) {
+            let v: Value = new Value(BoolType.instance(), (lvalue.data === rvalue.data));
+            return v;
+        } else {
+            throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], lvalue.type.toString());
+        }
     }
 
     private notEqualOp(lvalue: Value, rvalue: Value): Value {
-        throw Error;
+        if (lvalue.type == rvalue.type) {
+            let v: Value = new Value(BoolType.instance(), (lvalue.data != rvalue.data));
+            return v;
+        } else {
+            throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], lvalue.type.toString());
+        }
     }
 
     private lowerThanOp(lvalue: Value, rvalue: Value): Value {
-        throw Error;
-    }
-
-    private lowerEqualOp(lvalue: Value, rvalue: Value): Value {
-        throw Error;
-    }
-
-    private greaterThanOp(lvalue: Value, rvalue: Value): Value {
         let intType: IntType = IntType.instance();
+        let floatType: FloatType = FloatType.instance();
+        let charType: CharType = CharType.instance();
+        let stringType: StringType = StringType.instance();
+
         if (intType.match(lvalue.type)) {
             if (intType.match(rvalue.type)) {
                 let m: number = Number(lvalue.data);
                 let n: number = Number(rvalue.data);
+                let v: Value = new Value(BoolType.instance(), (m < n));
+                return v;
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+            }
+        } else if (floatType.match(lvalue.type)) {
+            if (floatType.match(rvalue.type)) {
+                let m: number = Number(lvalue.data);
+                let n: number = Number(rvalue.data);
+                let v: Value = new Value(BoolType.instance(), (m < n));
+                return v;
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+            }
+        } else if (charType.match(lvalue.type)) {
+            if (charType.match(rvalue.type)) {
+                let m: string = String(lvalue.data);
+                let n: string = String(rvalue.data);
+                let v: Value = new Value(BoolType.instance(), (m < n));
+                return v;
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+            }
+        } else if (stringType.match(lvalue.type)) {
+            if (stringType.match(rvalue.type)) {
+                let m: string = String(lvalue.data);
+                let n: string = String(rvalue.data);
+                let v: Value = new Value(BoolType.instance(), (m < n));
+                return v;
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+            }
+        } else {
+            throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], lvalue.type.toString());
+        }
+    }
+
+    private lowerEqualOp(lvalue: Value, rvalue: Value): Value {
+        let intType: IntType = IntType.instance();
+        let floatType: FloatType = FloatType.instance();
+        let charType: CharType = CharType.instance();
+        let stringType: StringType = StringType.instance();
+
+        if (intType.match(lvalue.type)) {
+            if (intType.match(rvalue.type)) {
+                let m: number = Number(lvalue.data);
+                let n: number = Number(rvalue.data);
+                let v: Value = new Value(BoolType.instance(), (m <= n));
+                return v;
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+            }
+        } else if (floatType.match(lvalue.type)) {
+            if (floatType.match(rvalue.type)) {
+                let m: number = Number(lvalue.data);
+                let n: number = Number(rvalue.data);
+                let v: Value = new Value(BoolType.instance(), (m <= n));
+                return v;
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+            }
+        } else if (charType.match(lvalue.type)) {
+            if (charType.match(rvalue.type)) {
+                let m: string = String(lvalue.data);
+                let n: string = String(rvalue.data);
+                let v: Value = new Value(BoolType.instance(), (m <= n));
+                return v;
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+            }
+        } else if (stringType.match(lvalue.type)) {
+            if (stringType.match(rvalue.type)) {
+                let m: string = String(lvalue.data);
+                let n: string = String(rvalue.data);
+                let v: Value = new Value(BoolType.instance(), (m <= n));
+                return v;
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+            }
+        } else {
+            throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], lvalue.type.toString());
+        }
+    }
+
+    private greaterThanOp(lvalue: Value, rvalue: Value): Value {
+        let intType: IntType = IntType.instance();
+        let floatType: FloatType = FloatType.instance();
+        let charType: CharType = CharType.instance();
+        let stringType: StringType = StringType.instance();
+
+        if (intType.match(lvalue.type)) {
+            if (intType.match(rvalue.type)) {
+                let m: number = Number(lvalue.data);
+                let n: number = Number(rvalue.data);
+                let v: Value = new Value(BoolType.instance(), (m > n));
+                return v;
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+            }
+        } else if (floatType.match(lvalue.type)) {
+            if (floatType.match(rvalue.type)) {
+                let m: number = Number(lvalue.data);
+                let n: number = Number(rvalue.data);
+                let v: Value = new Value(BoolType.instance(), (m > n));
+                return v;
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+            }
+        } else if (charType.match(lvalue.type)) {
+            if (charType.match(rvalue.type)) {
+                let m: string = String(lvalue.data);
+                let n: string = String(rvalue.data);
+                let v: Value = new Value(BoolType.instance(), (m > n));
+                return v;
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+            }
+        } else if (stringType.match(lvalue.type)) {
+            if (stringType.match(rvalue.type)) {
+                let m: string = String(lvalue.data);
+                let n: string = String(rvalue.data);
                 let v: Value = new Value(BoolType.instance(), (m > n));
                 return v;
             } else {
@@ -108,11 +260,100 @@ class BinaryExpr extends Expr {
     }
 
     private greaterEqualOp(lvalue: Value, rvalue: Value): Value {
-        throw Error;
+        let intType: IntType = IntType.instance();
+        let floatType: FloatType = FloatType.instance();
+        let charType: CharType = CharType.instance();
+        let stringType: StringType = StringType.instance();
+
+        if (intType.match(lvalue.type)) {
+            if (intType.match(rvalue.type)) {
+                let m: number = Number(lvalue.data);
+                let n: number = Number(rvalue.data);
+                let v: Value = new Value(BoolType.instance(), (m >= n));
+                return v;
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+            }
+        } else if (floatType.match(lvalue.type)) {
+            if (floatType.match(rvalue.type)) {
+                let m: number = Number(lvalue.data);
+                let n: number = Number(rvalue.data);
+                let v: Value = new Value(BoolType.instance(), (m >= n));
+                return v;
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+            }
+        } else if (charType.match(lvalue.type)) {
+            if (charType.match(rvalue.type)) {
+                let m: string = String(lvalue.data);
+                let n: string = String(rvalue.data);
+                let v: Value = new Value(BoolType.instance(), (m >= n));
+                return v;
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+            }
+        } else if (stringType.match(lvalue.type)) {
+            if (stringType.match(rvalue.type)) {
+                let m: string = String(lvalue.data);
+                let n: string = String(rvalue.data);
+                let v: Value = new Value(BoolType.instance(), (m >= n));
+                return v;
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+            }
+        } else {
+            throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], lvalue.type.toString());
+        }
     }
 
     private addOp(lvalue: Value, rvalue: Value): Value {
-        throw Error;
+        let intType: IntType = IntType.instance();
+        let floatType: FloatType = FloatType.instance();
+        let charType: CharType = CharType.instance();
+        let stringType: StringType = StringType.instance();
+
+        if (intType.match(lvalue.type)) {
+            if (intType.match(rvalue.type)) {
+                let m: number = Number(lvalue.data);
+                let n: number = Number(rvalue.data);
+                let v: Value = new Value(intType, (m + n));
+                return v;
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+            }
+        } else if (floatType.match(lvalue.type)) {
+            if (floatType.match(rvalue.type)) {
+                let m: number = Number(lvalue.data);
+                let n: number = Number(rvalue.data);
+
+                let v: Value = new Value(floatType, (m + n));
+                return v;
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+            }
+        } else if (stringType.match(lvalue.type)) {
+            if (stringType.match(rvalue.type)) {
+                let m: string = String(lvalue.data);
+                let n: string = String(rvalue.data);
+
+                let v: Value = new Value(stringType, (`${m + n}`));
+                return v;
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+            }
+        } else if (charType.match(lvalue.type)) {
+            if (charType.match(rvalue.type)) {
+                let m: string = String(lvalue.data);
+                let n: string = String(rvalue.data);
+
+                let v: Value = new Value(charType, Number(m + n));
+                return v;
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+            }
+        } else {
+            throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], lvalue.type.toString());
+        }
     }
 
     private subOp(lvalue: Value, rvalue: Value): Value {
@@ -143,11 +384,57 @@ class BinaryExpr extends Expr {
     }
 
     private mulOp(lvalue: Value, rvalue: Value): Value {
-        throw Error;
+        let intType: IntType = IntType.instance();
+        let floatType: FloatType = FloatType.instance();
+        if (intType.match(lvalue.type)) {
+            if (intType.match(rvalue.type)) {
+                let m: number = Number(lvalue.data);
+                let n: number = Number(rvalue.data);
+                let v: Value = new Value(intType, (m * n));
+                return v;
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+            }
+        } else if (floatType.match(lvalue.type)) {
+            if (floatType.match(rvalue.type)) {
+                let m: number = Number(lvalue.data);
+                let n: number = Number(rvalue.data);
+
+                let v: Value = new Value(floatType, (m * n));
+                return v;
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+            }
+        } else {
+            throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], lvalue.type.toString());
+        }
     }
 
     private divOp(lvalue: Value, rvalue: Value): Value {
-        throw Error;
+        let intType: IntType = IntType.instance();
+        let floatType: FloatType = FloatType.instance();
+        if (intType.match(lvalue.type)) {
+            if (intType.match(rvalue.type)) {
+                let m: number = Number(lvalue.data);
+                let n: number = Number(rvalue.data);
+                let v: Value = new Value(intType, (m / n));
+                return v;
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+            }
+        } else if (floatType.match(lvalue.type)) {
+            if (floatType.match(rvalue.type)) {
+                let m: number = Number(lvalue.data);
+                let n: number = Number(rvalue.data);
+
+                let v: Value = new Value(floatType, (m / n));
+                return v;
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+            }
+        } else {
+            throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], lvalue.type.toString());
+        }
     }
 
 }
