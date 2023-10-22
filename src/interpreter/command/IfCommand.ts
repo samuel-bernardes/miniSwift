@@ -1,4 +1,5 @@
 import { Expr } from "../expr/Expr";
+import { BoolType } from "../type/primitive/types/BoolType";
 import { Value } from "../value/Value";
 import { Command } from "./Command";
 
@@ -17,11 +18,15 @@ export class IfCommand extends Command {
 
     public execute(): void {
         let value: Value = this.expr.expr();
-
-        if (Boolean(value)) {
-            this.cmds.execute();
-        } else if (this.elseCmd) {
-            this.elseCmd.execute();
+        let boolType: BoolType = BoolType.instance();
+        if (boolType.match(value.type)) {
+            let b: boolean = Boolean(value.data);
+            if(b){
+                this.cmds.execute();
+            }
+            else if (this.elseCmd){
+                this.elseCmd.execute();
+            }
         }
 
     }
