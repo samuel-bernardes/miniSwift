@@ -15,7 +15,7 @@ import { BinaryExpr, BinaryOperator } from "../interpreter/expr/BinaryExpr";
 import { SetExpr } from "../interpreter/expr/SetExpr";
 import { Operator, UnaryExpr } from "../interpreter/expr/UnaryExpr";
 import { Variable } from "../interpreter/expr/Variable";
-import { Type } from "../interpreter/type/Type";
+import { Category, Type } from "../interpreter/type/Type";
 import { PrimitiveType } from "../interpreter/type/primitive/PrimitiveType";
 import { BoolType } from "../interpreter/type/primitive/types/BoolType";
 import { CharType } from "../interpreter/type/primitive/types/CharType";
@@ -27,6 +27,10 @@ import { LexicalAnalysis } from "../lexical/LexicalAnalysis";
 import { Token } from "../lexical/Token";
 import { InternalException } from "../error/InternalException";
 import { IfCommand } from "../interpreter/command/IfCommand";
+import { ComposedType } from "../interpreter/type/composed/ComposedType";
+import { ArrayType } from "../interpreter/type/composed/ArrayType";
+import { DictType } from "../interpreter/type/composed/DictType";
+import { ArrayExpr } from "../interpreter/expr/ArrayExpr";
 
 export class SyntaticAnalysis {
 
@@ -416,37 +420,37 @@ export class SyntaticAnalysis {
     }
 
     // <composed> ::= <arraytype> | <dicttype>
-    private procComposed(): any {
+    private procComposed(): ComposedType {
+        let ct: ComposedType = ArrayType.instance(Category.Array, BoolType.instance());
         if (this.check([Token.TokenType.ARRAY])) {
-            this.procArrayType();
-
+            ct = this.procArrayType();
         } else if (this.check([Token.TokenType.DICT])) {
-            this.procDictType();
-
+            ct = this.procDictType();
         } else {
             this.reportError();
         }
 
+        return ct;
     }
 
-
-
     // <arraytype> ::= Array '<' <type> '>'
-    private procArrayType() {
+    private procArrayType(): ArrayType {
         this.eat(Token.TokenType.ARRAY);
         this.eat(Token.TokenType.LOWER_THAN);
-        this.procType();
+        let type = this.procType();
         this.eat(Token.TokenType.GREATER_THAN);
+        return ArrayType.instance(Category.Array, type);
     }
 
     // <dicttype> ::= Dict '<' <type> ',' <type> '>'
-    private procDictType() {
+    private procDictType(): DictType {
         this.eat(Token.TokenType.DICT);
         this.eat(Token.TokenType.LOWER_THAN);
-        this.procType();
+        let type1 = this.procType();
         this.eat(Token.TokenType.COMMA);
-        this.procType();
+        let type2 = this.procType();
         this.eat(Token.TokenType.GREATER_THAN);
+        return DictType.instance(Category.Dict, type1, type2);
     }
 
     // <expr> ::= <cond> [ '?' <expr> ':' <expr> ]
@@ -509,6 +513,7 @@ export class SyntaticAnalysis {
         
         return left;
     }
+
     // <arith> ::= <term> { ( '+' | '-' ) <term> }
     private procArith(): Expr {
         let left: Expr = this.procTerm();
@@ -596,7 +601,7 @@ export class SyntaticAnalysis {
         ])) {
             this.procCast();
         } else if (this.check([Token.TokenType.ARRAY])) {
-            this.procArray();
+            expr = this.procArray();
         } else if (this.check([Token.TokenType.DICT])) {
             this.procDict();
         } else if (this.check([Token.TokenType.NAME])) {
@@ -688,16 +693,20 @@ export class SyntaticAnalysis {
     }
 
     // <array> ::= <arraytype> '(' [ <expr> { ',' <expr> } ] ')'
-    private procArray() {
-        this.procArrayType();
+    private procArray(): ArrayExpr {
+        let arrayType = this.procArrayType();
+        let line = this.previous.line;
         this.eat(Token.TokenType.OPEN_PAR);
+        let itens: Expr[] = [];
         if (!this.check([Token.TokenType.CLOSE_PAR])) {
-            this.procExpr();
+            itens.push(this.procExpr());
             while (this.match([Token.TokenType.COMMA])) {
-                this.procExpr();
+                itens.push(this.procExpr());
             }
         }
         this.eat(Token.TokenType.CLOSE_PAR);
+        let arrayexpr = new ArrayExpr(line, arrayType.getInnerType(), itens);
+        return arrayexpr;
     }
 
     // <dict> ::= <dictype> '(' [ <expr> ':' <expr> { ',' <expr> ':' <expr> } ] ')'

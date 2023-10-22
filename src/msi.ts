@@ -55,6 +55,7 @@ function run(inputString: string[]) {
         const syntax = new SyntaticAnalysis(lex);
         const cmd: Command = syntax.process();
         Interpreter.interpret(cmd);
+
     }
     catch (e: any) {
         if (e instanceof LanguageException) {
