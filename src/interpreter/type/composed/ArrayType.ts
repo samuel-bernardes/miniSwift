@@ -22,14 +22,6 @@ export class ArrayType extends ComposedType {
         }
     }
 
-    public hashCode(str: string): number {
-        var h: number = 0;
-        for (var i = 0; i < str.length; i++) {
-            h = 31 * h + str.charCodeAt(i);
-        }
-        return h & 0xFFFFFFFF
-    }
-
     public equals(obj: unknown): boolean {
         if (this === obj) {
             return true;

@@ -20,7 +20,7 @@ function randomFloat() {
     return Math.random();
 }
 
-class ActionExpr extends Expr {
+export class ActionExpr extends Expr {
 
     private op: ActionOperator;
 

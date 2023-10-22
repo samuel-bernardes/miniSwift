@@ -1,0 +1,29 @@
+import { Expr } from "../expr/Expr";
+import { Value } from "../value/Value";
+import { Command } from "./Command";
+
+export class IfCommand extends Command {
+
+    private expr: Expr;
+    private cmds: Command;
+    private elseCmd: Command | undefined;
+
+    constructor(line: number, expr: Expr, cmds: Command, elseCmd?: Command) {
+        super(line);
+        this.expr = expr;
+        this.cmds = cmds;
+        this.elseCmd = elseCmd;
+    }
+
+    public execute(): void {
+        let value: Value = this.expr.expr();
+
+        if (Boolean(value)) {
+            this.cmds.execute();
+        } else if (this.elseCmd) {
+            this.elseCmd.execute();
+        }
+
+    }
+
+}
