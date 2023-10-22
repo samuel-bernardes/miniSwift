@@ -21,10 +21,11 @@ export class ArrayExpr extends Expr {
 
         this.items.forEach(item => {
             let itemExpr: Value = item.expr();
+            console.log(itemExpr);
             if (this.innerType.match(itemExpr.type)) {
                 listItems.push(itemExpr);
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], itemExpr.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, itemExpr.type.toString());
             }
         })
 

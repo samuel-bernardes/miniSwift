@@ -30,7 +30,7 @@ export class DictExpr extends Expr {
             if (keyData.type.match(this.type.getKeyType()) && valueData.type.match(this.type.getValueType())) {
                 dictionary.set(keyData, valueData);
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], keyData.type.toString() + "-" + valueData.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, keyData.type.toString() + "-" + valueData.type.toString());
             }
 
         });

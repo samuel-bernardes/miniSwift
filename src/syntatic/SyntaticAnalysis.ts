@@ -28,6 +28,7 @@ import { InternalException } from "../error/InternalException";
 import { IfCommand } from "../interpreter/command/IfCommand";
 import { ArrayType, ComposedType, DictType } from "../interpreter/type/composed/ComposedType";
 import { ArrayExpr } from "../interpreter/expr/ArrayExpr";
+import { DictExpr, DictItem } from "../interpreter/expr/DictExpr";
 
 export class SyntaticAnalysis {
 
@@ -600,7 +601,7 @@ export class SyntaticAnalysis {
         } else if (this.check([Token.TokenType.ARRAY])) {
             expr = this.procArray();
         } else if (this.check([Token.TokenType.DICT])) {
-            this.procDict();
+            expr = this.procDict();
         } else if (this.check([Token.TokenType.NAME])) {
             expr = this.procLValue();
         } else {
@@ -707,23 +708,29 @@ export class SyntaticAnalysis {
     }
 
     // <dict> ::= <dictype> '(' [ <expr> ':' <expr> { ',' <expr> ':' <expr> } ] ')'
-    private procDict() {
-        this.procDictType();
+    private procDict(): DictExpr {
+        let dictType = this.procDictType();
+        let line = this.previous.line;
         this.eat(Token.TokenType.OPEN_PAR);
-
+        let dictItens: DictItem[] = [];
+        let dictItem: DictItem = {} as DictItem;
         if (!this.check([Token.TokenType.CLOSE_PAR])) {
-            this.procExpr();
+            dictItem.key = this.procExpr();
             this.eat(Token.TokenType.COLON);
-            this.procExpr();
-
+            dictItem.value = this.procExpr();
+            dictItens.push(dictItem);
             while (this.match([Token.TokenType.COMMA])) {
-                this.procExpr();
+                let dictItem: DictItem = {} as DictItem;
+                dictItem.key = this.procExpr();
                 this.eat(Token.TokenType.COLON);
-                this.procExpr();
+                dictItem.value = this.procExpr();
+                dictItens.push(dictItem);
             }
         }
 
         this.eat(Token.TokenType.CLOSE_PAR);
+        let dexpr = new DictExpr(line, dictType, dictItens);
+        return dexpr;
     }
 
     // <lvalue> ::= <name> { '[' <expr> ']' }
