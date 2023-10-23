@@ -34,6 +34,7 @@ import { FuncOp, FunctionExpr } from "../interpreter/expr/FunctionExpr";
 import { ActionExpr, ActionOperator } from "../interpreter/expr/ActionExpr";
 import { CastExpr, CastOperator } from "../interpreter/expr/CastExpr";
 import { AccessExpr } from "../interpreter/expr/AccessExpr";
+import { ConditionalExpr } from "../interpreter/expr/ConditionalExpr";
 
 export class SyntaticAnalysis {
 
@@ -471,13 +472,16 @@ export class SyntaticAnalysis {
 
     // <expr> ::= <cond> [ '?' <expr> ':' <expr> ]
     private procExpr(): Expr {
-        let expr: Expr = this.procCond();
+        let cond: Expr = this.procCond();
+        let line = this.previous.line;
         if (this.match([Token.TokenType.TERNARY])) {
-            this.procExpr();
+            let trueExpr = this.procExpr();
             this.eat(Token.TokenType.COLON);
-            this.procExpr();
+            let falseExpr = this.procExpr();
+            cond = new ConditionalExpr(line, cond, trueExpr, falseExpr);
         }
-        return expr;
+
+        return cond;
     }
 
     // <cond> ::= <rel> { ( '&&' | '||' ) <rel> }
@@ -699,7 +703,7 @@ export class SyntaticAnalysis {
         let line: number = 0;
         if (this.match([Token.TokenType.READ, Token.TokenType.RANDOM])) {
             line = this.previous.line;
-            switch(this.previous.type){
+            switch (this.previous.type) {
                 case Token.TokenType.READ:
                     op = ActionOperator.Read;
                     break;
