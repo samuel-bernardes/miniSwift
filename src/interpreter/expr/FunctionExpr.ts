@@ -65,15 +65,15 @@ export class FunctionExpr extends Expr {
                 }
             case FuncOp.Append:
                 if (this.param) {
-                    console.log("aaa");
                     if ((this.exprBase.expr().type.getCategory() == Category.Array)) {
                         let valueExp = this.exprBase.expr().data as Array<Value>;
-
-                        let dataExpr = valueExp.map((item) => {
-                            return item.data;
-                        })
-
-                        return new Value(ArrayType.instance(Category.Array, valueExp[0].type), dataExpr.push(this.param.expr().data));
+                        let newValue = this.param.expr();
+                        valueExp.push(newValue);
+                        if (newValue.type.match(valueExp[0].type)) {
+                            return new Value(ArrayType.instance(Category.Array, valueExp[0].type), valueExp);
+                        } else {
+                            throw LanguageException.instance(super.getLine(), customErrors.InvalidType, this.exprBase.expr().toString());
+                        }
                     } else {
                         throw LanguageException.instance(super.getLine(), customErrors.InvalidType, this.exprBase.expr().toString());
                     }
@@ -81,13 +81,19 @@ export class FunctionExpr extends Expr {
             case FuncOp.Contains:
                 if (this.param) {
                     if ((this.exprBase.expr().type.getCategory() == Category.Array)) {
-                        let valueExp = this.exprBase.expr().data as Array<Value>;
+                        let valueExpr = this.exprBase.expr().data as Array<Value>;
 
-                        let dataExpr = valueExp.map((item) => {
-                            return item.data;
+                        let paramExpr = this.param.expr();
+
+                        let hasElement: boolean = false;
+
+                        valueExpr.forEach(value => {
+                            if (value.data == paramExpr.data && value.type.match(paramExpr.type)) {
+                                hasElement = true;
+                            }
                         })
 
-                        return new Value(BoolType.instance(), Boolean(dataExpr.includes(this.param.expr().data)));
+                        return new Value(BoolType.instance(), Boolean(hasElement));
                     } else {
                         throw LanguageException.instance(super.getLine(), customErrors.InvalidType, this.exprBase.expr().toString());
                     }
