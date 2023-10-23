@@ -486,11 +486,15 @@ export class SyntaticAnalysis {
 
     // <cond> ::= <rel> { ( '&&' | '||' ) <rel> }
     private procCond(): Expr {
-        let expr: Expr = this.procRel();
+        let leftExpr: Expr = this.procRel();
+        let line: number = this.previous.line;
         while (this.match([Token.TokenType.AND, Token.TokenType.OR])) {
-            this.procRel();
+            let op: BinaryOperator = (this.previous.type == Token.TokenType.OR ? BinaryOperator.Or : BinaryOperator.And);
+            let rightExpr = this.procRel();
+            leftExpr = new BinaryExpr(line, leftExpr, op, rightExpr);
         }
-        return expr;
+
+        return leftExpr;
     }
 
     // <rel> ::= <arith> [ ( '<' | '>' | '<=' | '>=' | '==' | '!=' ) <arith> ]
