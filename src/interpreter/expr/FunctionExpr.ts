@@ -47,11 +47,7 @@ export class FunctionExpr extends Expr {
 
                     let keyType = keysArray[0].type;
 
-                    let keysValue = keysArray.map((key) => {
-                        return key.data;
-                    })
-
-                    return new Value(ArrayType.instance(Category.Array, keyType), keysValue);
+                    return new Value(ArrayType.instance(Category.Array, keyType), keysArray);
                 } else {
                     throw LanguageException.instance(super.getLine(), customErrors.InvalidType, this.exprBase.expr().toString());
                 }
@@ -63,16 +59,13 @@ export class FunctionExpr extends Expr {
 
                     let valueType = valuesArray[0].type;
 
-                    let values = valuesArray.map((key) => {
-                        return key.data;
-                    })
-
-                    return new Value(ArrayType.instance(Category.Array, valueType), values);
+                    return new Value(ArrayType.instance(Category.Array, valueType), valuesArray);
                 } else {
                     throw LanguageException.instance(super.getLine(), customErrors.InvalidType, this.exprBase.expr().toString());
                 }
             case FuncOp.Append:
                 if (this.param) {
+                    console.log("aaa");
                     if ((this.exprBase.expr().type.getCategory() == Category.Array)) {
                         let valueExp = this.exprBase.expr().data as Array<Value>;
 

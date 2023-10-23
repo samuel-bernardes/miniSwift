@@ -601,8 +601,10 @@ export class SyntaticAnalysis {
         } else {
             expr = this.procRValue();
         }
-
-        this.procFunction(expr);
+        let funcExpr: Expr | undefined = this.procFunction(expr);
+        if(funcExpr){
+            return funcExpr;
+        }
         return expr;
     }
 
@@ -760,6 +762,7 @@ export class SyntaticAnalysis {
 
     // <lvalue> ::= <name> { '[' <expr> ']' }
     private procLValue(): SetExpr {
+        //TODO ACCESS ARRAY
         let name: Token = this.procName();
         let line = this.previous.line;
         let sexpr: SetExpr = this.environment.get(name);
@@ -774,17 +777,13 @@ export class SyntaticAnalysis {
     }
 
     // <function> ::= { '.' ( <fnoargs> | <fonearg> ) }
-    private procFunction(expr?: Expr): Value | undefined {
-        let value: Value | undefined;
+    private procFunction(expr: Expr): Expr | undefined {
+        let value: Expr | undefined;
         while (this.match([Token.TokenType.DOT])) {
             if (this.check([Token.TokenType.APPEND, Token.TokenType.CONTAINS])) {
-                if (expr) {
-                    value = this.procFOneArg(expr).expr();
-                }
+                value = this.procFOneArg(expr);
             } else {
-                if (expr) {
-                    value = this.procFNoArgs(expr).expr();
-                }
+                value = this.procFNoArgs(expr);
             }
         }
         return value;
