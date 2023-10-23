@@ -26,7 +26,7 @@ export class WhileCommand extends Command {
 
                 this.cmds.execute();
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], value.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, value.type.toString());
             }
         } while (true);
     }

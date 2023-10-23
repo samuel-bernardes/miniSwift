@@ -1,7 +1,7 @@
 import { LanguageException, customErrors } from "../error/LanguageException";
 import { Environment } from "../interpreter/Environment";
 import { Interpreter } from "../interpreter/Interpreter";
-import { AssignCommand } from "../interpreter/command/AssingCommand";
+import { AssignCommand } from "../interpreter/command/AssignCommand";
 import { BlocksCommand } from "../interpreter/command/BlocksCommand";
 import { Command } from "../interpreter/command/Command";
 import { DumpCommand } from "../interpreter/command/DumpCommand";
