@@ -32,6 +32,7 @@ import { DictExpr, DictItem } from "../interpreter/expr/DictExpr";
 import { ForCommand } from "../interpreter/command/ForCommand";
 import { AccessExpr } from "../interpreter/expr/AccessExpr";
 import { FuncOp, FunctionExpr } from "../interpreter/expr/FunctionExpr";
+import exp from "constants";
 
 export class SyntaticAnalysis {
 
@@ -199,10 +200,6 @@ export class SyntaticAnalysis {
         } else {
             this.reportError();
         }
-
-        /* if (cmd === null) {
-            throw LanguageException.instance(this.current.line, customErrors["InvalidOperation"]);
-        } */
 
         return cmd;
     }
@@ -385,7 +382,7 @@ export class SyntaticAnalysis {
 
         if (this.match([Token.TokenType.ASSIGN])) {
             if (!(rhs instanceof SetExpr)) {
-                throw LanguageException.instance(this.previous!.line, customErrors.InvalidOperation);
+                throw LanguageException.instance(this.previous.line, customErrors.InvalidOperation);
             }
 
             lhs = rhs as SetExpr;
@@ -602,7 +599,7 @@ export class SyntaticAnalysis {
             expr = this.procRValue();
         }
         let funcExpr: Expr | undefined = this.procFunction(expr);
-        if(funcExpr){
+        if (funcExpr) {
             return funcExpr;
         }
         return expr;
@@ -610,7 +607,7 @@ export class SyntaticAnalysis {
 
     // <rvalue> ::= <const> | <action> | <cast> | <array> | <dict> | <lvalue>
     private procRValue(): Expr {
-        let expr: Expr | null = null; // Inicialize com null
+        let expr: Expr | null = null;
 
         if (this.check([
             Token.TokenType.FALSE, Token.TokenType.TRUE,
@@ -636,7 +633,7 @@ export class SyntaticAnalysis {
         }
 
         if (expr === null) {
-            throw LanguageException.instance(this.current.line, customErrors["InvalidOperation"]);
+            throw LanguageException.instance(this.current.line, customErrors.InvalidOperation);
         }
 
         return expr;
@@ -686,11 +683,11 @@ export class SyntaticAnalysis {
                 }
             }
         } else {
-            this.reportError();
+            throw this.reportError();
         }
 
-        if (value === null) {
-            throw LanguageException.instance(this.current.line, customErrors["InvalidOperation"]);
+        if (value == null) {
+            throw this.reportError();
         }
 
         return value;
@@ -833,7 +830,7 @@ export class SyntaticAnalysis {
         }
         this.eat(Token.TokenType.OPEN_PAR);
         let exprArg = this.procExpr();
-        let fexpr = new FunctionExpr(line, op, exprArg);
+        let fexpr = new FunctionExpr(line, op, expr, exprArg);
         this.eat(Token.TokenType.CLOSE_PAR);
         return fexpr;
     }
