@@ -30,10 +30,10 @@ import { ArrayType, ComposedType, DictType } from "../interpreter/type/composed/
 import { ArrayExpr } from "../interpreter/expr/ArrayExpr";
 import { DictExpr, DictItem } from "../interpreter/expr/DictExpr";
 import { ForCommand } from "../interpreter/command/ForCommand";
-import { AccessExpr } from "../interpreter/expr/AccessExpr";
 import { FuncOp, FunctionExpr } from "../interpreter/expr/FunctionExpr";
-import exp from "constants";
 import { ActionExpr, ActionOperator } from "../interpreter/expr/ActionExpr";
+import { CastExpr, CastOperator } from "../interpreter/expr/CastExpr";
+import { AccessExpr } from "../interpreter/expr/AccessExpr";
 
 export class SyntaticAnalysis {
 
@@ -621,7 +621,7 @@ export class SyntaticAnalysis {
             Token.TokenType.TO_BOOL, Token.TokenType.TO_INT,
             Token.TokenType.TO_FLOAT, Token.TokenType.TO_CHAR, Token.TokenType.TO_STRING
         ])) {
-            this.procCast();
+            expr = this.procCast();
         } else if (this.check([Token.TokenType.ARRAY])) {
             expr = this.procArray();
         } else if (this.check([Token.TokenType.DICT])) {
@@ -693,7 +693,6 @@ export class SyntaticAnalysis {
         return value;
     }
 
-
     // <action> ::= ( read  | random ) '(' ')'
     private procAction(): ActionExpr {
         let op: ActionOperator = ActionOperator.Read;
@@ -720,11 +719,36 @@ export class SyntaticAnalysis {
     }
 
     // <cast> ::= ( toBool | toInt | toFloat | toChar | toString ) '(' <expr> ')'
-    private procCast() {
+    private procCast(): CastExpr {
+        let line = this.current.line;
+        let op: CastOperator;
+
         this.match([Token.TokenType.TO_BOOL, Token.TokenType.TO_INT, Token.TokenType.TO_FLOAT, Token.TokenType.TO_CHAR, Token.TokenType.TO_STRING]);
+
+        switch (this.previous.type) {
+            case Token.TokenType.TO_BOOL:
+                op = CastOperator.toBoolOp;
+                break;
+            case Token.TokenType.TO_INT:
+                op = CastOperator.toIntOp;
+                break;
+            case Token.TokenType.TO_FLOAT:
+                op = CastOperator.toFloatOp;
+                break;
+            case Token.TokenType.TO_CHAR:
+                op = CastOperator.toCharOp;
+                break;
+            case Token.TokenType.TO_STRING:
+                op = CastOperator.toStringOp;
+                break;
+            default:
+                throw this.reportError();
+        }
         this.eat(Token.TokenType.OPEN_PAR);
-        this.procExpr();
+        let argExpr = this.procExpr();
+        let cExpr = new CastExpr(line, op, argExpr);
         this.eat(Token.TokenType.CLOSE_PAR);
+        return cExpr;
     }
 
     // <array> ::= <arraytype> '(' [ <expr> { ',' <expr> } ] ')'
