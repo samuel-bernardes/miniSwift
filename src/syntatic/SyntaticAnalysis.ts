@@ -763,7 +763,7 @@ export class SyntaticAnalysis {
         let name: Token = this.procName();
         let line = this.previous.line;
         let sexpr: SetExpr = this.environment.get(name);
-        let listSexpr: SetExpr[] = []; 
+        let listSexpr: SetExpr[] = [];
         if (this.match([Token.TokenType.OPEN_BRA])) {
             this.procExpr();
             this.eat(Token.TokenType.CLOSE_BRA);
@@ -774,16 +774,19 @@ export class SyntaticAnalysis {
     }
 
     // <function> ::= { '.' ( <fnoargs> | <fonearg> ) }
-    private procFunction(expr: Expr): Value {
+    private procFunction(expr?: Expr): Value | undefined {
         let value: Value | undefined;
         while (this.match([Token.TokenType.DOT])) {
             if (this.check([Token.TokenType.APPEND, Token.TokenType.CONTAINS])) {
-                value = this.procFOneArg(expr).expr();
+                if (expr) {
+                    value = this.procFOneArg(expr).expr();
+                }
             } else {
-                value = this.procFNoArgs(expr).expr();
+                if (expr) {
+                    value = this.procFNoArgs(expr).expr();
+                }
             }
         }
-        if (!value) throw this.reportError();
         return value;
     }
 
