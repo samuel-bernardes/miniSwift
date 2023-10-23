@@ -32,6 +32,7 @@ import { DictExpr, DictItem } from "../interpreter/expr/DictExpr";
 import { ForCommand } from "../interpreter/command/ForCommand";
 import { AccessExpr } from "../interpreter/expr/AccessExpr";
 import { FuncOp, FunctionExpr } from "../interpreter/expr/FunctionExpr";
+import exp from "constants";
 
 export class SyntaticAnalysis {
 
@@ -380,7 +381,6 @@ export class SyntaticAnalysis {
     private procAssign(): AssignCommand {
         let line: number = this.current.line;
         let rhs: Expr = this.procExpr();
-
         let lhs: SetExpr | null = null; // Inicializa com null
 
         if (this.match([Token.TokenType.ASSIGN])) {
@@ -762,15 +762,14 @@ export class SyntaticAnalysis {
 
     // <lvalue> ::= <name> { '[' <expr> ']' }
     private procLValue(): SetExpr {
-        //TODO ACCESS ARRAY
         let name: Token = this.procName();
         let line = this.previous.line;
         let sexpr: SetExpr = this.environment.get(name);
-        let listSexpr: SetExpr[] = [];
         if (this.match([Token.TokenType.OPEN_BRA])) {
-            this.procExpr();
+            let expr = this.procExpr();
             this.eat(Token.TokenType.CLOSE_BRA);
-            //listSexpr.push(acexpr);
+            let accExpr: AccessExpr = new AccessExpr(line, sexpr, expr);
+            return accExpr;
         }
 
         return sexpr;

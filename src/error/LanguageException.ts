@@ -22,7 +22,8 @@ export class LanguageException extends Error {
         }
 
         const msg = error.args === 0 ? error.msg : `${error.msg} [${args[0]}]`;
-        return new LanguageException(line, msg);
+        //return new LanguageException(line, msg);
+        throw new Error(msg);
     }
 }
 
