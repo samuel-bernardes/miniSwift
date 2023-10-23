@@ -21,7 +21,6 @@ export class ArrayExpr extends Expr {
 
         this.items.forEach(item => {
             let itemExpr: Value = item.expr();
-            console.log(itemExpr);
             if (this.innerType.match(itemExpr.type)) {
                 listItems.push(itemExpr);
             } else {
