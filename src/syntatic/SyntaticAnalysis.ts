@@ -33,6 +33,7 @@ import { ForCommand } from "../interpreter/command/ForCommand";
 import { AccessExpr } from "../interpreter/expr/AccessExpr";
 import { FuncOp, FunctionExpr } from "../interpreter/expr/FunctionExpr";
 import exp from "constants";
+import { ActionExpr, ActionOperator } from "../interpreter/expr/ActionExpr";
 
 export class SyntaticAnalysis {
 
@@ -615,7 +616,7 @@ export class SyntaticAnalysis {
         ])) {
             expr = this.procConst();
         } else if (this.check([Token.TokenType.READ, Token.TokenType.RANDOM])) {
-            this.procAction();
+            expr = this.procAction();
         } else if (this.check([
             Token.TokenType.TO_BOOL, Token.TokenType.TO_INT,
             Token.TokenType.TO_FLOAT, Token.TokenType.TO_CHAR, Token.TokenType.TO_STRING
@@ -694,15 +695,28 @@ export class SyntaticAnalysis {
 
 
     // <action> ::= ( read  | random ) '(' ')'
-    private procAction() {
+    private procAction(): ActionExpr {
+        let op: ActionOperator = ActionOperator.Read;
+        let line: number = 0;
         if (this.match([Token.TokenType.READ, Token.TokenType.RANDOM])) {
-            // Não fazer nada.
+            line = this.previous.line;
+            switch(this.previous.type){
+                case Token.TokenType.READ:
+                    op = ActionOperator.Read;
+                    break;
+                case Token.TokenType.RANDOM:
+                    op = ActionOperator.Random;
+                    break;
+                default:
+                    throw new Error("Unreacheable");
+            }
         } else {
             this.reportError();
         }
 
         this.eat(Token.TokenType.OPEN_PAR);
         this.eat(Token.TokenType.CLOSE_PAR);
+        return new ActionExpr(line, op);
     }
 
     // <cast> ::= ( toBool | toInt | toFloat | toChar | toString ) '(' <expr> ')'
