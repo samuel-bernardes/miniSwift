@@ -30,6 +30,7 @@ import { ArrayType, ComposedType, DictType } from "../interpreter/type/composed/
 import { ArrayExpr } from "../interpreter/expr/ArrayExpr";
 import { DictExpr, DictItem } from "../interpreter/expr/DictExpr";
 import { ForCommand } from "../interpreter/command/ForCommand";
+import { FuncOp, FunctionExpr } from "../interpreter/expr/FunctionExpr";
 
 export class SyntaticAnalysis {
 
@@ -546,13 +547,17 @@ export class SyntaticAnalysis {
 
     // <term> ::= <prefix> { ( '*' | '/' ) <prefix> }
     private procTerm(): Expr {
-        let expr: Expr = this.procPrefix();
+        let left: Expr = this.procPrefix();
 
         while (this.match([Token.TokenType.MUL, Token.TokenType.DIV])) {
-            this.procPrefix();
+            let line: number = this.previous.line;
+            let op: BinaryOperator = this.previous.type == Token.TokenType.MUL ?
+                BinaryOperator.Mul : BinaryOperator.Div;
+            let right: Expr = this.procPrefix();
+            left = new BinaryExpr(line, left, op, right);
         }
 
-        return expr;
+        return left;
     }
 
     // <prefix> ::= [ '!' | '-' ] <factor>
@@ -596,14 +601,14 @@ export class SyntaticAnalysis {
             expr = this.procRValue();
         }
 
-        this.procFunction();
+        this.procFunction(expr);
         return expr;
     }
 
     // <rvalue> ::= <const> | <action> | <cast> | <array> | <dict> | <lvalue>
     private procRValue(): Expr {
         let expr: Expr | null = null; // Inicialize com null
-        
+
         if (this.check([
             Token.TokenType.FALSE, Token.TokenType.TRUE,
             Token.TokenType.INTEGER_LITERAL, Token.TokenType.FLOAT_LITERAL,
@@ -633,7 +638,6 @@ export class SyntaticAnalysis {
 
         return expr;
     }
-
 
     // <const> ::= <bool> | <int> | <float> | <char> | <string>
     private procConst(): Expr {
@@ -767,29 +771,66 @@ export class SyntaticAnalysis {
     }
 
     // <function> ::= { '.' ( <fnoargs> | <fonearg> ) }
-    private procFunction() {
+    private procFunction(expr: Expr): Value {
+        let value: Value | undefined;
         while (this.match([Token.TokenType.DOT])) {
             if (this.check([Token.TokenType.APPEND, Token.TokenType.CONTAINS])) {
-                this.procFOneArg();
+                value = this.procFOneArg(expr).expr();
             } else {
-                this.procFNoArgs();
+                value = this.procFNoArgs(expr).expr();
             }
         }
+        if (!value) throw this.reportError();
+        return value;
     }
 
     // <fnoargs> ::= ( count | empty | keys | values ) '(' ')'
-    private procFNoArgs() {
+    private procFNoArgs(expr: Expr): FunctionExpr {
+        let op: FuncOp;
+        let line = this.previous.line;
         this.match([Token.TokenType.COUNT, Token.TokenType.EMPTY, Token.TokenType.KEYS, Token.TokenType.VALUES]);
+        switch (this.previous.type) {
+            case Token.TokenType.COUNT:
+                op = FuncOp.Count;
+                break;
+            case Token.TokenType.EMPTY:
+                op = FuncOp.Empty;
+                break;
+            case Token.TokenType.KEYS:
+                op = FuncOp.Keys;
+                break;
+            case Token.TokenType.VALUES:
+                op = FuncOp.Values;
+                break;
+            default:
+                throw this.reportError();
+        }
         this.eat(Token.TokenType.OPEN_PAR);
         this.eat(Token.TokenType.CLOSE_PAR);
+        let fexpr = new FunctionExpr(line, op, expr);
+        return fexpr;
     }
 
     // <fonearg> ::= ( append | contains ) '(' <expr> ')'
-    private procFOneArg() {
+    private procFOneArg(expr: Expr): FunctionExpr {
+        let op: FuncOp;
+        let line = this.previous.line;
         this.match([Token.TokenType.APPEND, Token.TokenType.CONTAINS]);
+        switch (this.previous.type) {
+            case Token.TokenType.CONTAINS:
+                op = FuncOp.Contains;
+                break;
+            case Token.TokenType.APPEND:
+                op = FuncOp.Append;
+                break;
+            default:
+                throw this.reportError();
+        }
         this.eat(Token.TokenType.OPEN_PAR);
-        this.procExpr();
+        let exprArg = this.procExpr();
+        let fexpr = new FunctionExpr(line, op, exprArg);
         this.eat(Token.TokenType.CLOSE_PAR);
+        return fexpr;
     }
 
     private procName(): Token {
