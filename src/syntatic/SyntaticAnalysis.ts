@@ -30,6 +30,7 @@ import { ArrayType, ComposedType, DictType } from "../interpreter/type/composed/
 import { ArrayExpr } from "../interpreter/expr/ArrayExpr";
 import { DictExpr, DictItem } from "../interpreter/expr/DictExpr";
 import { ForCommand } from "../interpreter/command/ForCommand";
+import { AccessExpr } from "../interpreter/expr/AccessExpr";
 
 export class SyntaticAnalysis {
 
@@ -756,11 +757,13 @@ export class SyntaticAnalysis {
     // <lvalue> ::= <name> { '[' <expr> ']' }
     private procLValue(): SetExpr {
         let name: Token = this.procName();
+        let line = this.previous.line;
         let sexpr: SetExpr = this.environment.get(name);
-
-        while (this.match([Token.TokenType.OPEN_BRA])) {
+        let listSexpr: SetExpr[] = []; 
+        if (this.match([Token.TokenType.OPEN_BRA])) {
             this.procExpr();
             this.eat(Token.TokenType.CLOSE_BRA);
+            //listSexpr.push(acexpr);
         }
 
         return sexpr;
