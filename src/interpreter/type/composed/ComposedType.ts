@@ -43,16 +43,6 @@ export class ArrayType extends ComposedType {
         }
     }
 
-    public equals(obj: unknown): boolean {
-        if (this === obj) {
-            return true;
-        } else if (obj instanceof ArrayType) {
-            return this.match(obj);
-        } else {
-            return false;
-        }
-    }
-
     public toString(): string {
         return `Array<${this.innerType}>`;
     }
@@ -83,17 +73,7 @@ export class DictType extends ComposedType {
     public match(type: Type): boolean {
         if (type instanceof DictType) {
             const dtype = type as DictType;
-            return this.keyType === dtype.keyType && this.valueType === dtype.valueType;
-        } else {
-            return false;
-        }
-    }
-
-    public equals(obj: unknown): boolean {
-        if (this === obj) {
-            return true;
-        } else if (obj instanceof DictType) {
-            return this.match(obj);
+            return this.keyType.match(dtype.keyType) && this.valueType.match(dtype.valueType);
         } else {
             return false;
         }

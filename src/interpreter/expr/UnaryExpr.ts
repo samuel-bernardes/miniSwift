@@ -38,7 +38,7 @@ export class UnaryExpr extends Expr {
             let b: boolean = !Boolean(value.data);
             return new Value(btype, b);
         } else {
-            throw LanguageException.instance(super.getLine(), customErrors["InvalidType"], value.type.toString());
+            throw LanguageException.instance(super.getLine(), customErrors.InvalidType, value.type.toString());
         }
     }
 

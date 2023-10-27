@@ -19,23 +19,29 @@ export class AccessExpr extends SetExpr {
     public expr(): Value {
         let valueExpr: Value = this.base.expr();
         let indexExpr: Value = this.index.expr();
+        let indexExprData: number = Number(indexExpr.data);
         if (valueExpr.type.getCategory() == Category.Array) {
             let arrayData = valueExpr.data as Array<Value>;
             if (indexExpr.type.match(IntType.instance())) {
-                if(Number(indexExpr.data) >= 0 && Number(indexExpr.data) < arrayData.length){
-                    return arrayData[Number(indexExpr.data)];
+                if (indexExprData >= 0 && indexExprData < arrayData.length) {
+                    return arrayData[indexExprData];
                 }
-                else{
+                else {
                     throw LanguageException.instance(super.getLine(), customErrors.InvalidOperation);
                 }
             } else {
                 throw LanguageException.instance(super.getLine(), customErrors.InvalidType, this.index.expr().toString());
             }
         } else if (valueExpr.type.getCategory() == Category.Dict) {
-            //TODO k["aa"]
             let dictData = valueExpr.data as Map<Value, Value>;
+            let dictValue: Value | undefined;
 
-            let dictValue = dictData.get(this.index.expr());
+            for (const key of dictData.keys()) {
+                if (key.type.match(indexExpr.type) && key.data === indexExpr.data) {
+                    dictValue = dictData.get(key);
+                    break;
+                }
+            }
 
             if (dictValue) {
                 return dictValue;
@@ -50,14 +56,16 @@ export class AccessExpr extends SetExpr {
 
     public setValue(value: Value): void {
         let valueExpr: Value = this.base.expr();
+        let indexExpr: Value = this.index.expr();
+        let indexExprData: number = Number(indexExpr.data);
 
         if (valueExpr.type.getCategory() == Category.Array) {
             let arrayData = valueExpr.data as Array<Value>;
-            if (this.index.expr().type.match(IntType.instance())) {
-                if(arrayData.length > Number(this.index.expr().data)){
-                    arrayData[Number(this.index.expr().data)] = value;
+            if (indexExpr.type.match(IntType.instance())) {
+                if (arrayData.length > indexExprData) {
+                    arrayData[indexExprData] = value;
                 }
-                else{
+                else {
                     throw LanguageException.instance(super.getLine(), customErrors.InvalidOperation);
                 }
             } else {
@@ -66,33 +74,23 @@ export class AccessExpr extends SetExpr {
         } else if (valueExpr.type.getCategory() == Category.Dict) {
             //TODO k["aa"]
             let dictData = valueExpr.data as Map<Value, Value>;
+            let dictValue: Value | undefined;
 
-            let dictValue = dictData.get(this.index.expr());
+            for (const values of dictData.values()) {
+                if (!values.type.match(value.type)) throw LanguageException.instance(super.getLine(), customErrors.InvalidType, value.toString());;
+            }
 
-            // if (dictValue) {
-            //     return dictValue;
-            // } else {
-            //     throw LanguageException.instance(super.getLine(), customErrors.InvalidOperation);
-            // }
+            for (const key of dictData.keys()) {
+                if (key.type.match(indexExpr.type) && key.data === indexExpr.data) {
+                    dictValue = key;
+                    dictData.set(key, value);
+                }
+            }
+
+            if (!dictValue) throw LanguageException.instance(super.getLine(), customErrors.InvalidOperation);
+
         } else {
             throw LanguageException.instance(super.getLine(), customErrors.InvalidOperation);
         }
-    }
-
-    private write(value: Value): void {
-
-        let setBase: Value = this.base.expr();
-
-        if (!setBase.type.match(value.type))
-            throw LanguageException.instance(super.getLine(), customErrors.InvalidType, value.type.toString());
-
-        if (setBase.type.getCategory() == Category.Array) {
-            let arrayData = setBase.data as Array<Value>;
-            arrayData[Number(this.index.expr().data)] = value;
-        } else if (setBase.type.getCategory() == Category.Dict) {
-            let dictData = setBase.data as Map<Value, Value>;
-            dictData.set(this.index.expr(), value);
-        }
-
     }
 }
