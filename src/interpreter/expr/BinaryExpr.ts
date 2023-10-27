@@ -354,9 +354,9 @@ export class BinaryExpr extends Expr {
                 throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
             }
         } else if (lvalue.type.getCategory() == Category.Array) {
-            if (rvalue.type.getCategory() == Category.Array) {
+            if (rvalue.type.match(lvalue.type)) {
 
-                let v: Value = new Value(ArrayType.instance(Category.Array, rvalue.type), [...lvalue.data as Array<unknown>, ...rvalue.data as Array<any>]);
+                let v: Value = new Value(ArrayType.instance(Category.Array, rvalue.type), [...lvalue.data as Array<unknown>, ...rvalue.data as Array<unknown>,]);
                 return v;
 
             } else {

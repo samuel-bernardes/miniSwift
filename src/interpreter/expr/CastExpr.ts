@@ -26,14 +26,14 @@ export class CastExpr extends Expr {
         switch (this.op) {
             case CastOperator.toBoolOp:
                 if (localExpr.type.getCategory() === Category.Dict) {
-                    let exprData = localExpr.data as Map<any, any>;
+                    let exprData = localExpr.data as Map<Value, Value>;
                     if (exprData.size == 0) {
                         return new Value(BoolType.instance(), false);
                     } else {
                         return new Value(BoolType.instance(), true);
                     }
                 } else if (localExpr.type.getCategory() === Category.Array) {
-                    let exprData = localExpr.data as Array<any>;
+                    let exprData = localExpr.data as Array<Value>;
                     if (exprData.length == 0) {
                         return new Value(BoolType.instance(), false);
                     } else {

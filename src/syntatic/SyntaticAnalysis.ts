@@ -158,22 +158,22 @@ export class SyntaticAnalysis {
     }
 
     // <decl> ::= <var> | <let>
-    private procDecl(): Command | null {
-        let cmd: Command | null = null;
+    private procDecl(): Command {
+        let cmd: Command;
         if (this.check([Token.TokenType.VAR])) {
             cmd = this.procVar();
         } else if (this.check([Token.TokenType.LET])) {
             cmd = this.procLet();
         } else {
-            this.reportError();
+            throw this.reportError();
         }
 
         return cmd;
     }
 
     // <cmd> ::= <block> | <decl> | <print> | <dump> | <if> | <while> | <for> | <assign>
-    private procCmd(env?: Environment): Command | any {
-        let cmd: Command | null = null; // Inicialize com null
+    private procCmd(env?: Environment): Command {
+        let cmd: Command; // Inicialize com null
 
         if (this.check([Token.TokenType.OPEN_CUR])) {
             cmd = this.procBlock(env);
@@ -200,7 +200,7 @@ export class SyntaticAnalysis {
         Token.TokenType.ARRAY, Token.TokenType.DICT, Token.TokenType.NAME])) {
             cmd = this.procAssign();
         } else {
-            this.reportError();
+            throw this.reportError();
         }
 
         return cmd;
