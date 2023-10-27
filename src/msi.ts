@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { createReadStream, ReadStream } from 'fs';
+import { ReadStream } from 'fs';
 import { LexicalAnalysis } from './lexical/LexicalAnalysis';
 import { SyntaticAnalysis } from './syntatic/SyntaticAnalysis';
 import { Command } from './interpreter/command/Command';
@@ -50,7 +50,7 @@ function runFile(filename: string) {
 }
 
 function run(inputString: string[]) {
-    try{
+    try {
         const lex = new LexicalAnalysis(inputString);
         const syntax = new SyntaticAnalysis(lex);
         const cmd: Command = syntax.process();
@@ -65,7 +65,7 @@ function run(inputString: string[]) {
             console.error(e.stack);
         }
     }
-    
+
     /* try {
         let token: Token;
         do {

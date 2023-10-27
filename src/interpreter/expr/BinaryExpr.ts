@@ -79,10 +79,10 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(BoolType.instance(), (m && n));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else {
-            throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], lvalue.type.toString());
+            throw LanguageException.instance(super.getLine(), customErrors.InvalidType, lvalue.type.toString());
         }
     }
 
@@ -95,10 +95,10 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(BoolType.instance(), (m || n));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else {
-            throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], lvalue.type.toString());
+            throw LanguageException.instance(super.getLine(), customErrors.InvalidType, lvalue.type.toString());
         }
     }
 
@@ -107,7 +107,7 @@ export class BinaryExpr extends Expr {
             let v: Value = new Value(BoolType.instance(), (lvalue.data === rvalue.data));
             return v;
         } else {
-            throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], lvalue.type.toString());
+            throw LanguageException.instance(super.getLine(), customErrors.InvalidType, lvalue.type.toString());
         }
     }
 
@@ -116,7 +116,7 @@ export class BinaryExpr extends Expr {
             let v: Value = new Value(BoolType.instance(), (lvalue.data != rvalue.data));
             return v;
         } else {
-            throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], lvalue.type.toString());
+            throw LanguageException.instance(super.getLine(), customErrors.InvalidType, lvalue.type.toString());
         }
     }
 
@@ -133,7 +133,7 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(BoolType.instance(), (m < n));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else if (floatType.match(lvalue.type)) {
             if (floatType.match(rvalue.type)) {
@@ -142,7 +142,7 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(BoolType.instance(), (m < n));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else if (charType.match(lvalue.type)) {
             if (charType.match(rvalue.type)) {
@@ -151,7 +151,7 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(BoolType.instance(), (m < n));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else if (stringType.match(lvalue.type)) {
             if (stringType.match(rvalue.type)) {
@@ -160,10 +160,10 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(BoolType.instance(), (m < n));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else {
-            throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], lvalue.type.toString());
+            throw LanguageException.instance(super.getLine(), customErrors.InvalidType, lvalue.type.toString());
         }
     }
 
@@ -180,7 +180,7 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(BoolType.instance(), (m <= n));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else if (floatType.match(lvalue.type)) {
             if (floatType.match(rvalue.type)) {
@@ -189,7 +189,7 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(BoolType.instance(), (m <= n));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else if (charType.match(lvalue.type)) {
             if (charType.match(rvalue.type)) {
@@ -198,7 +198,7 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(BoolType.instance(), (m <= n));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else if (stringType.match(lvalue.type)) {
             if (stringType.match(rvalue.type)) {
@@ -207,10 +207,10 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(BoolType.instance(), (m <= n));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else {
-            throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], lvalue.type.toString());
+            throw LanguageException.instance(super.getLine(), customErrors.InvalidType, lvalue.type.toString());
         }
     }
 
@@ -227,7 +227,7 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(BoolType.instance(), (m > n));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else if (floatType.match(lvalue.type)) {
             if (floatType.match(rvalue.type)) {
@@ -236,7 +236,7 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(BoolType.instance(), (m > n));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else if (charType.match(lvalue.type)) {
             if (charType.match(rvalue.type)) {
@@ -245,7 +245,7 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(BoolType.instance(), (m > n));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else if (stringType.match(lvalue.type)) {
             if (stringType.match(rvalue.type)) {
@@ -254,10 +254,10 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(BoolType.instance(), (m > n));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else {
-            throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], lvalue.type.toString());
+            throw LanguageException.instance(super.getLine(), customErrors.InvalidType, lvalue.type.toString());
         }
     }
 
@@ -274,7 +274,7 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(BoolType.instance(), (m >= n));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else if (floatType.match(lvalue.type)) {
             if (floatType.match(rvalue.type)) {
@@ -283,7 +283,7 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(BoolType.instance(), (m >= n));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else if (charType.match(lvalue.type)) {
             if (charType.match(rvalue.type)) {
@@ -292,7 +292,7 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(BoolType.instance(), (m >= n));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else if (stringType.match(lvalue.type)) {
             if (stringType.match(rvalue.type)) {
@@ -301,10 +301,10 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(BoolType.instance(), (m >= n));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else {
-            throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], lvalue.type.toString());
+            throw LanguageException.instance(super.getLine(), customErrors.InvalidType, lvalue.type.toString());
         }
     }
 
@@ -321,7 +321,7 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(intType, (m + n));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else if (floatType.match(lvalue.type)) {
             if (floatType.match(rvalue.type)) {
@@ -331,7 +331,7 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(floatType, (m + n));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else if (stringType.match(lvalue.type)) {
             if (stringType.match(rvalue.type)) {
@@ -341,7 +341,7 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(stringType, (`${m + n}`));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else if (charType.match(lvalue.type)) {
             if (charType.match(rvalue.type)) {
@@ -351,20 +351,20 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(charType, Number(m + n));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else if (lvalue.type.getCategory() == Category.Array) {
             if (rvalue.type.match(lvalue.type)) {
 
-                let v: Value = new Value(ArrayType.instance(Category.Array, rvalue.type), [...lvalue.data as Array<unknown>, ...rvalue.data as Array<unknown>,]);
-                return v;
+                let v: unknown = [...lvalue.data as Array<Value>, ...rvalue.data as Array<Value>,]
 
+                return new Value(ArrayType.instance(Category.Array, lvalue.type), v);
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
 
         } else {
-            throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], lvalue.type.toString());
+            throw LanguageException.instance(super.getLine(), customErrors.InvalidType, lvalue.type.toString());
         }
     }
 
@@ -378,7 +378,7 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(intType, (m - n));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else if (floatType.match(lvalue.type)) {
             if (floatType.match(rvalue.type)) {
@@ -388,10 +388,10 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(floatType, (m - n));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else {
-            throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], lvalue.type.toString());
+            throw LanguageException.instance(super.getLine(), customErrors.InvalidType, lvalue.type.toString());
         }
     }
 
@@ -405,7 +405,7 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(intType, (m * n));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else if (floatType.match(lvalue.type)) {
             if (floatType.match(rvalue.type)) {
@@ -415,10 +415,10 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(floatType, (m * n));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else {
-            throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], lvalue.type.toString());
+            throw LanguageException.instance(super.getLine(), customErrors.InvalidType, lvalue.type.toString());
         }
     }
 
@@ -432,7 +432,7 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(intType, (m / n));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else if (floatType.match(lvalue.type)) {
             if (floatType.match(rvalue.type)) {
@@ -442,10 +442,10 @@ export class BinaryExpr extends Expr {
                 let v: Value = new Value(floatType, (m / n));
                 return v;
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], rvalue.type.toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
         } else {
-            throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], lvalue.type.toString());
+            throw LanguageException.instance(super.getLine(), customErrors.InvalidType, lvalue.type.toString());
         }
     }
 

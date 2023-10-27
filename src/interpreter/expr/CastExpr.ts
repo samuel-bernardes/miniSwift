@@ -78,8 +78,6 @@ export class CastExpr extends Expr {
             default:
                 throw new InternalException("unreachable");
         }
-
-        return localExpr;
     }
 
 }
