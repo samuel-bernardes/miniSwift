@@ -6,7 +6,7 @@ import { Expr } from "./Expr";
 
 const readline = require('readline');
 
-const rl = readline.createInterface({
+/*const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
@@ -15,7 +15,7 @@ function enterData(): string {
     return rl.question('', (input: string) => {
         return input;
     });
-}
+}*/
 
 function randomFloat() {
     return Math.random();
@@ -33,7 +33,7 @@ export class ActionExpr extends Expr {
     public expr(): Value {
         switch (this.op) {
             case ActionOperator.Read:
-                return new Value(StringType.instance(), enterData().trim());
+                return new Value(StringType.instance(), console.log());
             case ActionOperator.Random:
                 throw new Value(FloatType.instance(), randomFloat());;
             default:

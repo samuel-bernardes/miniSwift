@@ -37,7 +37,7 @@ export class ArrayType extends ComposedType {
     public match(type: Type): boolean {
         if (type instanceof ArrayType) {
             const atype = type as ArrayType;
-            return this.innerType === atype.innerType;
+            return this.innerType.match(atype.innerType);
         } else {
             return false;
         }

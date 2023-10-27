@@ -615,7 +615,7 @@ export class SyntaticAnalysis {
 
     // <rvalue> ::= <const> | <action> | <cast> | <array> | <dict> | <lvalue>
     private procRValue(): Expr {
-        let expr: Expr | null = null;
+        let expr: Expr;
 
         if (this.check([
             Token.TokenType.FALSE, Token.TokenType.TRUE,
@@ -637,11 +637,7 @@ export class SyntaticAnalysis {
         } else if (this.check([Token.TokenType.NAME])) {
             expr = this.procLValue();
         } else {
-            this.reportError();
-        }
-
-        if (expr === null) {
-            throw LanguageException.instance(this.current.line, customErrors.InvalidOperation);
+            throw this.reportError();
         }
 
         return expr;
@@ -806,15 +802,14 @@ export class SyntaticAnalysis {
     private procLValue(): SetExpr {
         let name: Token = this.procName();
         let line = this.previous.line;
-        let sexpr: SetExpr = this.environment.get(name);
-        if (this.match([Token.TokenType.OPEN_BRA])) {
-            let expr = this.procExpr();
+        let base: SetExpr = this.environment.get(name);
+        while (this.match([Token.TokenType.OPEN_BRA])) {
+            let index = this.procExpr();
             this.eat(Token.TokenType.CLOSE_BRA);
-            let accExpr: AccessExpr = new AccessExpr(line, sexpr, expr);
-            return accExpr;
+            base = new AccessExpr(line, base, index);
         }
 
-        return sexpr;
+        return base;
     }
 
     // <function> ::= { '.' ( <fnoargs> | <fonearg> ) }

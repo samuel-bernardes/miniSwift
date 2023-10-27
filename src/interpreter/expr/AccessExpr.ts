@@ -18,12 +18,12 @@ export class AccessExpr extends SetExpr {
 
     public expr(): Value {
         let valueExpr: Value = this.base.expr();
-
+        let indexExpr: Value = this.index.expr();
         if (valueExpr.type.getCategory() == Category.Array) {
             let arrayData = valueExpr.data as Array<Value>;
-            if (this.index.expr().type.match(IntType.instance())) {
-                if(arrayData.length > Number(this.index.expr().data)){
-                    return arrayData[Number(this.index.expr().data)];
+            if (indexExpr.type.match(IntType.instance())) {
+                if(Number(indexExpr.data) >= 0 && Number(indexExpr.data) < arrayData.length){
+                    return arrayData[Number(indexExpr.data)];
                 }
                 else{
                     throw LanguageException.instance(super.getLine(), customErrors.InvalidOperation);
@@ -49,7 +49,34 @@ export class AccessExpr extends SetExpr {
     }
 
     public setValue(value: Value): void {
-        this.write(value);
+        let valueExpr: Value = this.base.expr();
+
+        if (valueExpr.type.getCategory() == Category.Array) {
+            let arrayData = valueExpr.data as Array<Value>;
+            if (this.index.expr().type.match(IntType.instance())) {
+                if(arrayData.length > Number(this.index.expr().data)){
+                    arrayData[Number(this.index.expr().data)] = value;
+                }
+                else{
+                    throw LanguageException.instance(super.getLine(), customErrors.InvalidOperation);
+                }
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, this.index.expr().toString());
+            }
+        } else if (valueExpr.type.getCategory() == Category.Dict) {
+            //TODO k["aa"]
+            let dictData = valueExpr.data as Map<Value, Value>;
+
+            let dictValue = dictData.get(this.index.expr());
+
+            // if (dictValue) {
+            //     return dictValue;
+            // } else {
+            //     throw LanguageException.instance(super.getLine(), customErrors.InvalidOperation);
+            // }
+        } else {
+            throw LanguageException.instance(super.getLine(), customErrors.InvalidOperation);
+        }
     }
 
     private write(value: Value): void {
