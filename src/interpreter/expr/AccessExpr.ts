@@ -74,18 +74,25 @@ export class AccessExpr extends SetExpr {
         } else if (valueExpr.type.getCategory() == Category.Dict) {
             //TODO k["aa"]
             let dictData = valueExpr.data as Map<Value, Value>;
-            let dictValue: Value | undefined;
 
             for (const values of dictData.values()) {
                 if (!values.type.match(value.type)) throw LanguageException.instance(super.getLine(), customErrors.InvalidType, value.toString());;
             }
 
+            let acessKey;
             for (const key of dictData.keys()) {
                 if (key.type.match(indexExpr.type) && key.data === indexExpr.data) {
-                    dictValue = key;
-                    dictData.set(key, value);
+                    acessKey = key;
+                    break;
                 }
             }
+
+            if (acessKey) {
+                dictData.set(acessKey, value);
+            } else {
+                dictData.set(indexExpr, value)
+            }
+
         } else {
             throw LanguageException.instance(super.getLine(), customErrors.InvalidOperation);
         }
