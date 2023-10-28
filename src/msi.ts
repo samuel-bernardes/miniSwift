@@ -65,32 +65,6 @@ function run(inputString: string[]) {
             console.error(e.stack);
         }
     }
-
-    /* try {
-        let token: Token;
-        do {
-            token = lex.nextToken();
-            console.log(`${token.line}: ("${token.lexeme}", ${token.type}, ${token.literal})`);
-        } while (
-            token.type !== Token.TokenType.END_OF_FILE &&
-            token.type !== Token.TokenType.INVALID_TOKEN &&
-            token.type !== Token.TokenType.UNEXPECTED_EOF
-        );
-
-        // O código a seguir é dado para testar o interpretador.
-        // Descomente após o analisador léxico estar pronto.
-        // const syntacticAnalysis = new SyntaticAnalysis(lex);
-        // const cmd = syntacticAnalysis.process();
-        // Interpreter.interpret(cmd);
-
-    } catch (e: any) {
-        if (e instanceof LanguageException) {
-            console.log(e.message);
-        } else {
-            console.error(`Internal error: ${e.message}`);
-            console.error(e.stack);
-        }
-    } */
 }
 
 const args = process.argv.slice(2);

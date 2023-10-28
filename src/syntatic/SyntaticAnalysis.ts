@@ -699,7 +699,7 @@ export class SyntaticAnalysis {
 
     // <action> ::= ( read  | random ) '(' ')'
     private procAction(): ActionExpr {
-        let op: ActionOperator = ActionOperator.Read;
+        let op: ActionOperator;
         let line: number = 0;
         if (this.match([Token.TokenType.READ, Token.TokenType.RANDOM])) {
             line = this.previous.line;
@@ -711,10 +711,10 @@ export class SyntaticAnalysis {
                     op = ActionOperator.Random;
                     break;
                 default:
-                    throw new Error("Unreacheable");
+                    throw this.reportError();
             }
         } else {
-            this.reportError();
+            throw this.reportError();
         }
 
         this.eat(Token.TokenType.OPEN_PAR);
