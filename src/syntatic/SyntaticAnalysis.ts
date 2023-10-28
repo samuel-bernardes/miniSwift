@@ -173,34 +173,42 @@ export class SyntaticAnalysis {
 
     // <cmd> ::= <block> | <decl> | <print> | <dump> | <if> | <while> | <for> | <assign>
     private procCmd(env?: Environment): Command {
-        let cmd: Command; // Inicialize com null
-
-        if (this.check([Token.TokenType.OPEN_CUR])) {
-            cmd = this.procBlock(env);
-        } else if (this.check([Token.TokenType.VAR, Token.TokenType.LET])) {
-            cmd = this.procDecl();
-        } else if (this.check([Token.TokenType.PRINT, Token.TokenType.PRINTLN])) {
-            cmd = this.procPrint();
-        } else if (this.check([Token.TokenType.DUMP])) {
-            cmd = this.procDump();
-        } else if (this.check([Token.TokenType.IF])) {
-            cmd = this.procIf();
-        } else if (this.check([Token.TokenType.WHILE])) {
-            cmd = this.procWhile();
-        } else if (this.check([Token.TokenType.FOR])) {
-            cmd = this.procFor();
-        } else if (this.check([Token.TokenType.NOT, Token.TokenType.SUB,
-        Token.TokenType.OPEN_PAR, Token.TokenType.FALSE,
-        Token.TokenType.TRUE, Token.TokenType.INTEGER_LITERAL,
-        Token.TokenType.FLOAT_LITERAL, Token.TokenType.CHAR_LITERAL,
-        Token.TokenType.STRING_LITERAL, Token.TokenType.READ,
-        Token.TokenType.RANDOM, Token.TokenType.TO_BOOL,
-        Token.TokenType.TO_INT, Token.TokenType.TO_FLOAT,
-        Token.TokenType.TO_CHAR, Token.TokenType.TO_STRING,
-        Token.TokenType.ARRAY, Token.TokenType.DICT, Token.TokenType.NAME])) {
-            cmd = this.procAssign();
-        } else {
-            throw this.reportError();
+        let cmd: Command; 
+        let old = this.environment;
+        try {
+            if (env != undefined) {
+                this.environment = env;
+            }
+            if (this.check([Token.TokenType.OPEN_CUR])) {
+                cmd = this.procBlock();
+            } else if (this.check([Token.TokenType.VAR, Token.TokenType.LET])) {
+                cmd = this.procDecl();  
+            } else if (this.check([Token.TokenType.PRINT, Token.TokenType.PRINTLN])) {
+                cmd = this.procPrint();
+            } else if (this.check([Token.TokenType.DUMP])) {
+                cmd = this.procDump();
+            } else if (this.check([Token.TokenType.IF])) {
+                cmd = this.procIf();
+            } else if (this.check([Token.TokenType.WHILE])) {
+                cmd = this.procWhile();
+            } else if (this.check([Token.TokenType.FOR])) {
+                cmd = this.procFor();
+            } else if (this.check([Token.TokenType.NOT, Token.TokenType.SUB,
+            Token.TokenType.OPEN_PAR, Token.TokenType.FALSE,
+            Token.TokenType.TRUE, Token.TokenType.INTEGER_LITERAL,
+            Token.TokenType.FLOAT_LITERAL, Token.TokenType.CHAR_LITERAL,
+            Token.TokenType.STRING_LITERAL, Token.TokenType.READ,
+            Token.TokenType.RANDOM, Token.TokenType.TO_BOOL,
+            Token.TokenType.TO_INT, Token.TokenType.TO_FLOAT,
+            Token.TokenType.TO_CHAR, Token.TokenType.TO_STRING,
+            Token.TokenType.ARRAY, Token.TokenType.DICT, Token.TokenType.NAME])) {
+                cmd = this.procAssign();
+            } else {
+                throw this.reportError();
+            }
+        }
+        finally {
+            this.environment = old;
         }
 
         return cmd;

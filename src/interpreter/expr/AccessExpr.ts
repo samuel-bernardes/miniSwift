@@ -83,7 +83,7 @@ export class AccessExpr extends SetExpr {
             for (const key of dictData.keys()) {
                 if (key.type.match(indexExpr.type) && key.data === indexExpr.data) {
                     acessKey = key;
-                    break;
+                    break;  
                 }
             }
 
