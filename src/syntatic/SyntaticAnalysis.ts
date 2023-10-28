@@ -606,10 +606,13 @@ export class SyntaticAnalysis {
         } else {
             expr = this.procRValue();
         }
+
         let funcExpr: Expr | undefined = this.procFunction(expr);
+
         if (funcExpr) {
             return funcExpr;
         }
+
         return expr;
     }
 
@@ -813,15 +816,19 @@ export class SyntaticAnalysis {
     }
 
     // <function> ::= { '.' ( <fnoargs> | <fonearg> ) }
-    private procFunction(expr: Expr): Expr | undefined {
-        let value: Expr | undefined;
+    private procFunction(expr?: Expr): Expr | undefined {
+        let value: Expr | undefined = expr;
+
         while (this.match([Token.TokenType.DOT])) {
-            if (this.check([Token.TokenType.APPEND, Token.TokenType.CONTAINS])) {
-                value = this.procFOneArg(expr);
-            } else {
-                value = this.procFNoArgs(expr);
+            if (value) {
+                if (this.check([Token.TokenType.APPEND, Token.TokenType.CONTAINS])) {
+                    value = this.procFOneArg(value);
+                } else {
+                    value = this.procFNoArgs(value);
+                }
             }
         }
+
         return value;
     }
 
@@ -869,8 +876,8 @@ export class SyntaticAnalysis {
         }
         this.eat(Token.TokenType.OPEN_PAR);
         let exprArg = this.procExpr();
-        let fexpr = new FunctionExpr(line, op, expr, exprArg);
         this.eat(Token.TokenType.CLOSE_PAR);
+        let fexpr = new FunctionExpr(line, op, expr, exprArg);
         return fexpr;
     }
 

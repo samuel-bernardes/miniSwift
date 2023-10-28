@@ -86,9 +86,6 @@ export class AccessExpr extends SetExpr {
                     dictData.set(key, value);
                 }
             }
-
-            if (!dictValue) throw LanguageException.instance(super.getLine(), customErrors.InvalidOperation);
-
         } else {
             throw LanguageException.instance(super.getLine(), customErrors.InvalidOperation);
         }

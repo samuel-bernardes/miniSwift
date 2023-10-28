@@ -1,6 +1,6 @@
 import { LanguageException, customErrors } from "../../error/LanguageException";
 import { Category } from "../type/Type";
-import { ArrayType } from "../type/composed/ComposedType";
+import { ArrayType, DictType } from "../type/composed/ComposedType";
 import { BoolType } from "../type/primitive/types/BoolType";
 import { IntType } from "../type/primitive/types/IntType";
 import { StringType } from "../type/primitive/types/StringType";
@@ -41,12 +41,13 @@ export class FunctionExpr extends Expr {
                     throw LanguageException.instance(super.getLine(), customErrors.InvalidType, expr.toString());
                 }
             case FuncOp.Keys:
-                if (expr.type.getCategory() == Category.Dict) {
+                let exprType = expr.type as DictType;
+                if (exprType.getCategory() == Category.Dict) {
                     let valueExp = expr.data as Map<Value, Value>;
 
                     let keysArray = Array.from(valueExp.keys());
 
-                    let keyType = keysArray[0].type;
+                    let keyType = exprType.getKeyType();
 
                     return new Value(ArrayType.instance(Category.Array, keyType), keysArray);
                 } else {
