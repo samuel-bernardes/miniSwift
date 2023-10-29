@@ -34,7 +34,7 @@ export class AccessExpr extends SetExpr {
             } else {
                 throw LanguageException.instance(super.getLine(), customErrors.InvalidType, indexExpr.toString());
             }
-        } 
+        }
         else if (valueExpr.type.getCategory() == Category.Dict) {
             let dictData = valueExpr.data as Map<Value, Value>;
             let dictValue: Value | undefined;
@@ -52,7 +52,7 @@ export class AccessExpr extends SetExpr {
                 throw LanguageException.instance(super.getLine(), customErrors.InvalidOperation);
             }
         }
-        else if (valueExpr.type.getCategory() == Category.String){
+        else if (valueExpr.type.getCategory() == Category.String) {
             let str = valueExpr.data as string;
             let arrChar = Array.from(str);
             let charVal: Value;
@@ -102,7 +102,7 @@ export class AccessExpr extends SetExpr {
             for (const key of dictData.keys()) {
                 if (key.type.match(indexExpr.type) && key.data === indexExpr.data) {
                     acessKey = key;
-                    break;  
+                    break;
                 }
             }
 
@@ -113,18 +113,17 @@ export class AccessExpr extends SetExpr {
             }
 
         }
-        else if (valueExpr.type.getCategory() == Category.String){
+        else if (valueExpr.type.match(StringType.instance())) {
             let str = valueExpr.data as string;
             let arrChar = Array.from(str);
             if (indexExpr.type.match(IntType.instance())) {
                 if (indexExprData >= 0 && indexExprData < arrChar.length) {
-                    if(value.type.match(CharType.instance())){
-                        console.log("value.data: " + value.data);
+                    if (value.type.match(CharType.instance())) {
                         arrChar[indexExprData] = value.data as string;
-                        console.log(arrChar);
-                        valueExpr = new Value(StringType.instance(), arrChar.toString());
+                        const modifiedValue = new Value(StringType.instance(), arrChar.join(''));
+                        this.base.setValue(modifiedValue);
                     }
-                    else{
+                    else {
                         throw LanguageException.instance(super.getLine(), customErrors.InvalidType, indexExpr.toString());
                     }
                 }
