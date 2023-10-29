@@ -1,7 +1,8 @@
 import { Token } from './Token';
-import { InternalException } from '../error/InternalException';
 import { Value } from '../interpreter/value/Value';
 import { PrimitiveTypes } from '../interpreter/type/primitive/types';
+import { LanguageException, customErrors } from '../error/LanguageException';
+import { InternalException } from '../error/InternalException';
 
 const keywords: { [key: string]: Token.TokenType } = {
 	'.': Token.TokenType.DOT,
@@ -275,7 +276,7 @@ export class LexicalAnalysis {
 					}
 					break;
 				default:
-					throw new InternalException("Unreachable");
+					throw new InternalException("InvalidToken");
 			}
 		}
 

@@ -1,4 +1,3 @@
-import { InternalException } from "../../error/InternalException";
 import { LanguageException, customErrors } from "../../error/LanguageException";
 import { BoolType } from "../type/primitive/types/BoolType";
 import { Value } from "../value/Value";
@@ -26,7 +25,7 @@ export class UnaryExpr extends Expr {
                 ret = this.negOp(value);
                 break;
             default:
-                throw new InternalException("unreachable");
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidOperation);
         }
 
         return ret;

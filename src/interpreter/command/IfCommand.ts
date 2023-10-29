@@ -29,7 +29,7 @@ export class IfCommand extends Command {
                 this.elseCmd.execute();
             }
         } else {
-            throw LanguageException.instance(super.getLine(), customErrors["Tipo inválido"], value.type.toString());
+            throw LanguageException.instance(super.getLine(), customErrors.InvalidType, value.type.toString());
         }
 
     }

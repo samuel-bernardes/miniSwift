@@ -64,7 +64,7 @@ export class BinaryExpr extends Expr {
                 ret = this.divOp(lvalue, rvalue);
                 break;
             default:
-                throw new InternalException("unreachable");
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidOperation);
         }
 
         return ret;
