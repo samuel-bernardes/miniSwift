@@ -1,6 +1,8 @@
 import { LanguageException, customErrors } from "../../error/LanguageException";
 import { Category } from "../type/Type";
+import { CharType } from "../type/primitive/types/CharType";
 import { IntType } from "../type/primitive/types/IntType";
+import { StringType } from "../type/primitive/types/StringType";
 import { Value } from "../value/Value";
 import { Expr } from "./Expr";
 import { SetExpr } from "./SetExpr";
@@ -30,9 +32,10 @@ export class AccessExpr extends SetExpr {
                     throw LanguageException.instance(super.getLine(), customErrors.InvalidOperation);
                 }
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, this.index.expr().toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, indexExpr.toString());
             }
-        } else if (valueExpr.type.getCategory() == Category.Dict) {
+        } 
+        else if (valueExpr.type.getCategory() == Category.Dict) {
             let dictData = valueExpr.data as Map<Value, Value>;
             let dictValue: Value | undefined;
 
@@ -48,7 +51,24 @@ export class AccessExpr extends SetExpr {
             } else {
                 throw LanguageException.instance(super.getLine(), customErrors.InvalidOperation);
             }
-        } else {
+        }
+        else if (valueExpr.type.getCategory() == Category.String){
+            let str = valueExpr.data as string;
+            let arrChar = Array.from(str);
+            let charVal: Value;
+            if (indexExpr.type.match(IntType.instance())) {
+                if (indexExprData >= 0 && indexExprData < arrChar.length) {
+                    charVal = new Value(CharType.instance(), arrChar[indexExprData]);
+                    return charVal;
+                }
+                else {
+                    throw LanguageException.instance(super.getLine(), customErrors.InvalidOperation);
+                }
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, indexExpr.toString());
+            }
+        }
+        else {
             throw LanguageException.instance(super.getLine(), customErrors.InvalidOperation);
         }
 
@@ -69,10 +89,9 @@ export class AccessExpr extends SetExpr {
                     throw LanguageException.instance(super.getLine(), customErrors.InvalidOperation);
                 }
             } else {
-                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, this.index.expr().toString());
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, indexExpr.toString());
             }
         } else if (valueExpr.type.getCategory() == Category.Dict) {
-            //TODO k["aa"]
             let dictData = valueExpr.data as Map<Value, Value>;
 
             for (const values of dictData.values()) {
@@ -93,7 +112,30 @@ export class AccessExpr extends SetExpr {
                 dictData.set(indexExpr, value)
             }
 
-        } else {
+        }
+        else if (valueExpr.type.getCategory() == Category.String){
+            let str = valueExpr.data as string;
+            let arrChar = Array.from(str);
+            if (indexExpr.type.match(IntType.instance())) {
+                if (indexExprData >= 0 && indexExprData < arrChar.length) {
+                    if(value.type.match(CharType.instance())){
+                        console.log("value.data: " + value.data);
+                        arrChar[indexExprData] = value.data as string;
+                        console.log(arrChar);
+                        valueExpr = new Value(StringType.instance(), arrChar.toString());
+                    }
+                    else{
+                        throw LanguageException.instance(super.getLine(), customErrors.InvalidType, indexExpr.toString());
+                    }
+                }
+                else {
+                    throw LanguageException.instance(super.getLine(), customErrors.InvalidOperation);
+                }
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, indexExpr.toString());
+            }
+        }
+        else {
             throw LanguageException.instance(super.getLine(), customErrors.InvalidOperation);
         }
     }

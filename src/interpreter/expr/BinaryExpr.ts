@@ -429,7 +429,10 @@ export class BinaryExpr extends Expr {
             if (intType.match(rvalue.type)) {
                 let m: number = Number(lvalue.data);
                 let n: number = Number(rvalue.data);
-                let v: Value = new Value(intType, (m / n));
+                let res: number = Number(m / n);
+                let resString = String(res);
+                res = Number.parseInt(resString);
+                let v: Value = new Value(intType, res);
                 return v;
             } else {
                 throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
