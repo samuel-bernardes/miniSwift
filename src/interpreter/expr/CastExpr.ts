@@ -1,4 +1,5 @@
 import { InternalException } from "../../error/InternalException";
+import { LanguageException, customErrors } from "../../error/LanguageException";
 import { Category } from "../type/Type";
 import { BoolType } from "../type/primitive/types/BoolType";
 import { CharType } from "../type/primitive/types/CharType";
@@ -76,7 +77,7 @@ export class CastExpr extends Expr {
                 return new Value(StringType.instance(), String(localExpr.data));
 
             default:
-                throw new InternalException("unreachable");
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidOperation);
         }
     }
 

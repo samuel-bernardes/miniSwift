@@ -22,8 +22,7 @@ export class LanguageException extends Error {
         }
 
         const msg = error.args === 0 ? error.msg : `${error.msg} [${args[0]}]`;
-        //return new LanguageException(line, msg);
-        throw new Error(msg);
+        throw new LanguageException(line, msg);
     }
 }
 
@@ -37,7 +36,7 @@ const customErrors: { [key: string]: CustomError } = {
     ConstantAssignment: { msg: 'Atribuição em variável constante', args: 1 },
     InvalidType: { msg: 'Tipo inválido', args: 1 },
     InvalidOperation: { msg: 'Operação inválida', args: 0 },
-    InvalidValue: {msg: 'Valor inesperado! ', args: 0 },
+    InvalidValue: { msg: 'Valor inesperado! ', args: 0 },
 };
 
 export { customErrors };
