@@ -244,7 +244,6 @@ export class SyntaticAnalysis {
                 let line: number = this.previous.line;
                 let expr: Expr = this.procExpr();
 
-                let cmds: Command[] = [];
                 let icmd: InitializeCommand = new InitializeCommand(line, v, expr);
                 cmds.push(icmd);
             }
