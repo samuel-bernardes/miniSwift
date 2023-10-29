@@ -356,9 +356,11 @@ export class BinaryExpr extends Expr {
         } else if (lvalue.type.getCategory() == Category.Array) {
             if (rvalue.type.match(lvalue.type)) {
 
-                let v: unknown = [...lvalue.data as Array<Value>, ...rvalue.data as Array<Value>,]
+                let lvalueType = lvalue.type as ArrayType;
+                
+                const concatenatedArray = [...lvalue.data as Array<Value>, ...rvalue.data as Array<Value>];
 
-                return new Value(ArrayType.instance(Category.Array, lvalue.type), v);
+                return new Value(ArrayType.instance(Category.Array, lvalueType.getInnerType()), concatenatedArray);
             } else {
                 throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
