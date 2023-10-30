@@ -1,7 +1,6 @@
 import { Token } from './Token';
 import { Value } from '../interpreter/value/Value';
 import { PrimitiveTypes } from '../interpreter/type/primitive/types';
-import { LanguageException, customErrors } from '../error/LanguageException';
 import { InternalException } from '../error/InternalException';
 
 const keywords: { [key: string]: Token.TokenType } = {
@@ -270,6 +269,12 @@ export class LexicalAnalysis {
 						token.literal = new Value(PrimitiveTypes.StringType.instance(), token.lexeme);
 						token.type = Token.TokenType.STRING_LITERAL;
 						state = 15;
+					} else if (c == '\0') {
+						token.type = Token.TokenType.UNEXPECTED_EOF;
+						state = 15;
+					} else if (c == '\n') {
+						this.line += 1;
+						state = 13;
 					} else {
 						token.lexeme += c;
 						state = 13;

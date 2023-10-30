@@ -1,7 +1,6 @@
-import { InternalException } from "../../error/InternalException";
 import { LanguageException, customErrors } from "../../error/LanguageException";
 import { Category } from "../type/Type";
-import { ArrayType } from "../type/composed/ComposedType";
+import { ArrayType, DictType } from "../type/composed/ComposedType";
 import { BoolType } from "../type/primitive/types/BoolType";
 import { CharType } from "../type/primitive/types/CharType";
 import { FloatType } from "../type/primitive/types/FloatType";
@@ -357,7 +356,7 @@ export class BinaryExpr extends Expr {
             if (rvalue.type.match(lvalue.type)) {
 
                 let lvalueType = lvalue.type as ArrayType;
-                
+
                 const concatenatedArray = [...lvalue.data as Array<Value>, ...rvalue.data as Array<Value>];
 
                 return new Value(ArrayType.instance(Category.Array, lvalueType.getInnerType()), concatenatedArray);
@@ -365,6 +364,19 @@ export class BinaryExpr extends Expr {
                 throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
             }
 
+        } else if (lvalue.type.getCategory() == Category.Dict) {
+            if (rvalue.type.match(lvalue.type)) {
+                let lvalueType = lvalue.type as DictType;
+
+                let lvalueMap = lvalue.data as Map<Value, Value>;
+                let rvalueMap = rvalue.data as Map<Value, Value>;
+
+                let concatenated = new Map([...lvalueMap].concat([...rvalueMap]));
+
+                return new Value(DictType.instance(Category.Dict, lvalueType.getKeyType(), lvalueType.getValueType()), concatenated);
+            } else {
+                throw LanguageException.instance(super.getLine(), customErrors.InvalidType, rvalue.type.toString());
+            }
         } else {
             throw LanguageException.instance(super.getLine(), customErrors.InvalidType, lvalue.type.toString());
         }
