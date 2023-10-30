@@ -57,7 +57,7 @@ export class SyntaticAnalysis {
     }
 
     private advance(): void {
-        console.log("Found " + this.current);
+        //console.log("Found " + this.current);
         this.previous = this.current;
         this.current = this.lex.nextToken();
     }

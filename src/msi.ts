@@ -77,6 +77,6 @@ switch (args.length) {
         runFile(args[0]);
         break;
     default:
-        console.log('Usage: ts-node msi.ts [miniSwift file]');
+        console.log('Usage: node dist/msi.js [miniSwift file]');
         break;
 }
