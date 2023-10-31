@@ -1,4 +1,3 @@
-import { InternalException } from "../../error/InternalException";
 import { LanguageException, customErrors } from "../../error/LanguageException";
 import { Category } from "../type/Type";
 import { BoolType } from "../type/primitive/types/BoolType";

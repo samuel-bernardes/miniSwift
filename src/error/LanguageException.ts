@@ -17,10 +17,6 @@ export class LanguageException extends Error {
     }
 
     public static instance(line: number, error: CustomError, ...args: string[]): LanguageException {
-        if (error.args !== args.length) {
-            throw new Error('Número incorreto de argumentos fornecidos para a exceção.');
-        }
-
         const msg = error.args === 0 ? error.msg : `${error.msg} [${args[0]}]`;
         throw new LanguageException(line, msg);
     }

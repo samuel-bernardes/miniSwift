@@ -62,7 +62,6 @@ function run(inputString: string[]) {
             console.log(e.message);
         } else {
             console.error(`Internal error: ${e.message}`);
-            console.error(e.stack);
         }
     }
 }

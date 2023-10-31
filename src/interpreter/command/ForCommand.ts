@@ -2,11 +2,9 @@ import { LanguageException, customErrors } from "../../error/LanguageException";
 import { Expr } from "../expr/Expr";
 import { Variable } from "../expr/Variable";
 import { Category } from "../type/Type";
-import { BoolType } from "../type/primitive/types/BoolType";
 import { CharType } from "../type/primitive/types/CharType";
 import { Value } from "../value/Value";
 import { Command } from "./Command";
-import { InitializeCommand } from "./InitializeCommand";
 
 export class ForCommand extends Command {
 
