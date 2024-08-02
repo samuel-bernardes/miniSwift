@@ -1,5 +1,7 @@
 # README - MiniSwift
 
+Interpretador para linguagem inspirada em swift feito com typescript para o trabalho da disciplina Linguagens de Programação. 
+
 Projeto TypeScript
 
 Pré-requisitos:
